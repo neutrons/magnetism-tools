@@ -315,10 +315,10 @@
 <h1>msgjson documentation<a class="headerlink" href="#msgjson-documentation" title="Link to this heading">#</a></h1>
 <p><em>msgjson</em> provides magnetic space group (MSG) operator tables for all 1651
 commensurate Shubnikov groups and implements symmetry-analysis workflows for
-magnetic structures.  The library reproduces the k-SUBGROUPSMAG
-<a class="reference internal" href="#perezmato2015" id="id1"><span>[PerezMato2015]</span></a> and MAXMAGN workflows from the Bilbao Crystallographic
-Server <a class="reference internal" href="#vondreele2024" id="id2"><span>[VonDreele2024]</span></a>, and is designed to complement magnetic structure
-refinement in FullProf <a class="reference internal" href="#rodriguezcarvajal2021" id="id3"><span>[RodriguezCarvajal2021]</span></a> and Jana2020 <a class="reference internal" href="#henriques2024" id="id4"><span>[Henriques2024]</span></a>.</p>
+magnetic structures.  The library is inspired by the k-SUBGROUPSMAG and
+MAXMAGN workflows from the Bilbao Crystallographic Server <a class="footnote-reference brackets" href="#id5" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, and is
+designed to complement magnetic structure refinement in GSAS-II <a class="footnote-reference brackets" href="#id6" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>,
+FullProf <a class="footnote-reference brackets" href="#id7" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, and Jana2020 <a class="footnote-reference brackets" href="#id8" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>.</p>
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -326,8 +326,8 @@ refinement in FullProf <a class="reference internal" href="#rodriguezcarvajal202
 <li><p>k-vector compatibility filtering with centering-aware reciprocal lattice</p></li>
 <li><p>Site-symmetry moment basis via SVD null-space analysis</p></li>
 <li><p>MAXMAGN-style maximal MSG selection</p></li>
-<li><p>k-SUBGROUPSMAG-style full subgroup lattice search <a class="reference internal" href="#perezmato2015" id="id5"><span>[PerezMato2015]</span></a></p></li>
-<li><p>Direct lower-symmetry MSG analysis (Bilbao/Jana2020 workflow) <a class="reference internal" href="#henriques2024" id="id6"><span>[Henriques2024]</span></a></p></li>
+<li><p>k-SUBGROUPSMAG-style full subgroup lattice search</p></li>
+<li><p>Direct lower-symmetry MSG analysis</p></li>
 <li><p>Domain operator enumeration</p></li>
 </ul>
 <div class="toctree-wrapper compound">
@@ -342,34 +342,33 @@ refinement in FullProf <a class="reference internal" href="#rodriguezcarvajal202
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
-<div role="list" class="citation-list">
-<div class="citation" id="perezmato2015" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>PerezMato2015<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id5" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>J. M. Perez-Mato, S. V. Gallego, E. S. Tasci, L. Elcoro,
 G. de la Flor, and M. I. Aroyo,
 <em>Annu. Rev. Mater. Res.</em> <strong>45</strong>, 217 (2015).
 <a class="reference external" href="https://doi.org/10.1146/annurev-matsci-070214-021008">DOI:10.1146/annurev-matsci-070214-021008</a></p>
-</div>
-<div class="citation" id="vondreele2024" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">VonDreele2024</a><span class="fn-bracket">]</span></span>
+</aside>
+<aside class="footnote brackets" id="id6" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>R. B. Von Dreele and L. Elcoro,
 <em>Acta Cryst. B: Struct. Sci.</em> <strong>80</strong>, No. 5 (2024).
 <a class="reference external" href="https://journals.iucr.org/b/issues/2024/05/00/gar5003/index.html">https://journals.iucr.org/b/issues/2024/05/00/gar5003/index.html</a></p>
-</div>
-<div class="citation" id="rodriguezcarvajal2021" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">RodriguezCarvajal2021</a><span class="fn-bracket">]</span></span>
-<p>J. Rodriguez-Carvajal,
-<em>Acta Cryst. A</em> <strong>77</strong>, C176 (2021).</p>
-</div>
-<div class="citation" id="henriques2024" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>Henriques2024<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
+</aside>
+<aside class="footnote brackets" id="id7" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>J. Rodriguez-Carvajal, J. Gonzalez-Platas, and N. A. Katcho,
+<em>Acta Cryst. B: Struct. Sci.</em> <strong>81</strong>, 302 (2025).
+<a class="reference external" href="https://journals.iucr.org/b/issues/2025/03/00/cam5008/index.html">https://journals.iucr.org/b/issues/2025/03/00/cam5008/index.html</a></p>
+</aside>
+<aside class="footnote brackets" id="id8" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
 <p>M. S. Henriques, V. Petříček, S. Goswami, and M. Dušek,
 <em>Acta Cryst. B: Struct. Sci.</em> <strong>80</strong>, No. 5 (2024).
 <a class="reference external" href="https://journals.iucr.org/b/issues/2024/05/00/cam5001/index.html">https://journals.iucr.org/b/issues/2024/05/00/cam5001/index.html</a></p>
-</div>
-</div>
+</aside>
+</aside>
 </section>
 </section>
 
