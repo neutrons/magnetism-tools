@@ -15,7 +15,9 @@ from .spglib_source import iter_all_msgs
 from .schema import validate
 
 
-DEFAULT_OUTPUT = pathlib.Path(__file__).parents[2] / "data" / "msg_operators.json"
+DEFAULT_OUTPUT = (
+    pathlib.Path(__file__).parents[2] / "data" / "msg_operators.json"
+)
 
 
 def build_table() -> dict:
@@ -45,7 +47,9 @@ def main(output: pathlib.Path = DEFAULT_OUTPUT) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Build MSG operator JSON table")
+    parser = argparse.ArgumentParser(
+        description="Build MSG operator JSON table"
+    )
     parser.add_argument(
         "--output",
         type=pathlib.Path,

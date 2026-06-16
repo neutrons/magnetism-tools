@@ -7,7 +7,11 @@ import jsonschema
 
 
 def load_schema() -> dict:
-    ref = pathlib.Path(__file__).parents[2] / "data" / "msg_operators.schema.json"
+    ref = (
+        pathlib.Path(__file__).parents[2]
+        / "data"
+        / "msg_operators.schema.json"
+    )
     with ref.open() as f:
         return json.load(f)
 

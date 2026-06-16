@@ -22,6 +22,7 @@ from msgjson.query import (
 # Unit tests — centering-aware k-compatibility
 # ---------------------------------------------------------------------------
 
+
 class TestIsIntegerModCentering:
     def test_primitive_integer(self):
         assert _is_integer_mod_centering(np.array([1.0, -2.0, 0.0]), "P")
@@ -47,11 +48,15 @@ class TestIsIntegerModCentering:
 
     def test_tolerance(self):
         # 1e-5 deviation should still pass
-        assert _is_integer_mod_centering(np.array([1.0 + 1e-5, 0.0, 0.0]), "P", tol=1e-4)
+        assert _is_integer_mod_centering(
+            np.array([1.0 + 1e-5, 0.0, 0.0]), "P", tol=1e-4
+        )
 
     def test_tolerance_strict(self):
         # 5e-4 deviation should fail at default tol=1e-4
-        assert not _is_integer_mod_centering(np.array([1.0 + 5e-4, 0.0, 0.0]), "P", tol=1e-4)
+        assert not _is_integer_mod_centering(
+            np.array([1.0 + 5e-4, 0.0, 0.0]), "P", tol=1e-4
+        )
 
 
 class TestIsKCompatible:
@@ -73,13 +78,18 @@ class TestIsKCompatible:
         # For F centering: (-1,0,0): h+k=-1 odd     → NOT compatible (correct)
         W = np.array([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
         k = np.array([0.5, 0.5, 0.5])
-        assert     _is_k_compatible(W, +1, k, centering="P")  # passes with P (too loose)
-        assert not _is_k_compatible(W, +1, k, centering="F")  # correctly excluded with F
+        assert _is_k_compatible(
+            W, +1, k, centering="P"
+        )  # passes with P (too loose)
+        assert not _is_k_compatible(
+            W, +1, k, centering="F"
+        )  # correctly excluded with F
 
 
 # ---------------------------------------------------------------------------
 # Unit tests — moment basis
 # ---------------------------------------------------------------------------
+
 
 class TestMomentBasis:
     def test_identity_only(self):
@@ -116,6 +126,7 @@ class TestMomentBasis:
 # ---------------------------------------------------------------------------
 # Integration tests — compatible_msgs
 # ---------------------------------------------------------------------------
+
 
 class TestCompatibleMsgs:
     def test_returns_list_of_msgreults(self):
@@ -165,6 +176,7 @@ class TestCompatibleMsgs:
 # Integration tests — maxmagn (MnF2 canonical case)
 # ---------------------------------------------------------------------------
 
+
 class TestMaxmagn:
     def test_mnf2_returns_results(self):
         results = maxmagn(136, k=[0, 0, 0], sites=[[0, 0, 0]])
@@ -179,19 +191,21 @@ class TestMaxmagn:
         results = maxmagn(136, k=[0, 0, 0], sites=[[0, 0, 0]])
         for r in results:
             basis = r.sites[0].moment_basis
-            assert basis.shape[1] == 1, (
-                f"Expected 1-D moment subspace, got {basis.shape[1]} for {r.bns_number}"
-            )
+            assert (
+                basis.shape[1] == 1
+            ), f"Expected 1-D moment subspace, got {basis.shape[1]} for {r.bns_number}"
             direction = basis[:, 0] / np.linalg.norm(basis[:, 0])
             c_axis = np.array([0.0, 0.0, 1.0])
-            assert np.allclose(np.abs(direction @ c_axis), 1.0, atol=1e-4), (
-                f"Expected m || [001] for {r.bns_number}, got {direction}"
-            )
+            assert np.allclose(
+                np.abs(direction @ c_axis), 1.0, atol=1e-4
+            ), f"Expected m || [001] for {r.bns_number}, got {direction}"
 
     def test_mnf2_two_maximal_msgs(self):
         # Two distinct type-III MSGs of P4_2/mnm allow m || [001]
         results = maxmagn(136, k=[0, 0, 0], sites=[[0, 0, 0]])
-        assert len(results) == 2, f"Expected 2 maximal MSGs, got {len(results)}"
+        assert (
+            len(results) == 2
+        ), f"Expected 2 maximal MSGs, got {len(results)}"
 
     def test_mnf2_type3(self):
         results = maxmagn(136, k=[0, 0, 0], sites=[[0, 0, 0]])
@@ -200,7 +214,9 @@ class TestMaxmagn:
     def test_mnf2_same_n_ops(self):
         results = maxmagn(136, k=[0, 0, 0], sites=[[0, 0, 0]])
         n_ops_set = {r.n_ops for r in results}
-        assert len(n_ops_set) == 1, "All maximal MSGs should have the same n_ops"
+        assert (
+            len(n_ops_set) == 1
+        ), "All maximal MSGs should have the same n_ops"
 
     def test_sg1_k0_returns_one(self):
         # SG1: two MSGs allow moments (type-I with 1 op, type-IV with 2 ops).
@@ -227,6 +243,7 @@ class TestMaxmagn:
 # ---------------------------------------------------------------------------
 # Integration tests — CrI3 (SG 148, R-3, ferromagnetic k=0)
 # ---------------------------------------------------------------------------
+
 
 class TestCrI3:
     """CrI3 low-temperature rhombohedral ferromagnet.
@@ -269,9 +286,9 @@ class TestCrI3:
         basis = type1.sites[0].moment_basis
         direction = basis[:, 0] / np.linalg.norm(basis[:, 0])
         c_axis = np.array([0.0, 0.0, 1.0])
-        assert np.allclose(np.abs(direction @ c_axis), 1.0, atol=1e-4), (
-            f"Expected m || [001], got {direction}"
-        )
+        assert np.allclose(
+            np.abs(direction @ c_axis), 1.0, atol=1e-4
+        ), f"Expected m || [001], got {direction}"
 
     def test_type1_orbit_is_6c(self):
         # At (0,0,1/3) in R-3 with 18 operators, site symmetry = C3 (3 ops)
@@ -289,12 +306,16 @@ class TestCrI3:
         results = maxmagn(self.SG, k=self.K, sites=[self.CR_SITE])
         for r in results:
             s = r.sites[0]
-            assert s.n_free == 1, f"Expected 1-D moment subspace for {r.bns_number}"
-            direction = s.moment_basis[:, 0] / np.linalg.norm(s.moment_basis[:, 0])
-            c_axis = np.array([0.0, 0.0, 1.0])
-            assert np.allclose(np.abs(direction @ c_axis), 1.0, atol=1e-4), (
-                f"Expected m || [001] for {r.bns_number}, got {direction}"
+            assert (
+                s.n_free == 1
+            ), f"Expected 1-D moment subspace for {r.bns_number}"
+            direction = s.moment_basis[:, 0] / np.linalg.norm(
+                s.moment_basis[:, 0]
             )
+            c_axis = np.array([0.0, 0.0, 1.0])
+            assert np.allclose(
+                np.abs(direction @ c_axis), 1.0, atol=1e-4
+            ), f"Expected m || [001] for {r.bns_number}, got {direction}"
 
     def test_maxmagn_bns_number(self):
         # maxmagn selects type-IV MSG (BNS 148.20) — most operators (36)
@@ -316,16 +337,21 @@ class TestCrI3:
             s = r.sites[0]
             if s.n_free == 0:
                 continue
-            assert s.n_free == 1, f"Unexpected n_free={s.n_free} for {r.bns_number}"
-            direction = s.moment_basis[:, 0] / np.linalg.norm(s.moment_basis[:, 0])
-            assert np.allclose(np.abs(direction @ c_axis), 1.0, atol=1e-4), (
-                f"Expected m || [001] for {r.bns_number}, got {direction}"
+            assert (
+                s.n_free == 1
+            ), f"Unexpected n_free={s.n_free} for {r.bns_number}"
+            direction = s.moment_basis[:, 0] / np.linalg.norm(
+                s.moment_basis[:, 0]
             )
+            assert np.allclose(
+                np.abs(direction @ c_axis), 1.0, atol=1e-4
+            ), f"Expected m || [001] for {r.bns_number}, got {direction}"
 
 
 # ---------------------------------------------------------------------------
 # Integration tests — CrCl3 (SG 148, R-3, interlayer AFM k=(0,0,3/2))
 # ---------------------------------------------------------------------------
+
 
 class TestCrCl3:
     """CrCl3 low-temperature rhombohedral antiferromagnet.
@@ -359,18 +385,21 @@ class TestCrCl3:
     CR_SITE = [0, 0, 1 / 3]
 
     def test_compatible_msgs_count(self):
-        results = compatible_msgs(self.SG, k=self.K, sites=[self.CR_SITE],
-                                  centering="R")
+        results = compatible_msgs(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
         assert len(results) == 4
 
     def test_compatible_msgs_types(self):
-        results = compatible_msgs(self.SG, k=self.K, sites=[self.CR_SITE],
-                                  centering="R")
+        results = compatible_msgs(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
         assert {r.msg_type for r in results} == {1, 2, 3, 4}
 
     def test_grey_group_forbids_moment(self):
-        results = compatible_msgs(self.SG, k=self.K, sites=[self.CR_SITE],
-                                  centering="R")
+        results = compatible_msgs(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
         grey = next(r for r in results if r.msg_type == 2)
         assert grey.sites[0].n_free == 0
 
@@ -380,8 +409,9 @@ class TestCrCl3:
         # the single allowed direction along c.  This confirms that the
         # physical CrCl3 in-plane ordering CANNOT be found by maxmagn for
         # parent SG 148.
-        results = compatible_msgs(self.SG, k=self.K, sites=[self.CR_SITE],
-                                  centering="R")
+        results = compatible_msgs(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
         c_axis = np.array([0.0, 0.0, 1.0])
         for r in results:
             s = r.sites[0]
@@ -391,16 +421,19 @@ class TestCrCl3:
                 f"BNS {r.bns_number}: expected n_free=1 (m||c), "
                 f"got n_free={s.n_free}"
             )
-            direction = s.moment_basis[:, 0] / np.linalg.norm(s.moment_basis[:, 0])
-            assert np.allclose(np.abs(direction @ c_axis), 1.0, atol=1e-4), (
-                f"BNS {r.bns_number}: expected m||c, got {np.round(direction, 4)}"
+            direction = s.moment_basis[:, 0] / np.linalg.norm(
+                s.moment_basis[:, 0]
             )
+            assert np.allclose(
+                np.abs(direction @ c_axis), 1.0, atol=1e-4
+            ), f"BNS {r.bns_number}: expected m||c, got {np.round(direction, 4)}"
 
     def test_no_inplane_moment_possible_in_r3(self):
         # n_free=2 (2-D in-plane subspace) or n_free=3 (fully free) would
         # indicate in-plane moments are accessible; neither must appear.
-        results = compatible_msgs(self.SG, k=self.K, sites=[self.CR_SITE],
-                                  centering="R")
+        results = compatible_msgs(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
         for r in results:
             assert r.sites[0].n_free in (0, 1), (
                 f"BNS {r.bns_number}: n_free={r.sites[0].n_free} "
@@ -411,22 +444,25 @@ class TestCrCl3:
         # All 6 positions in the 6c orbit sit on a 3-fold axis (primary at
         # (0,0,z), secondary at (1/3,2/3,z) and (2/3,1/3,z)), so the same
         # C3 constraint applies everywhere in the orbit.
-        results = compatible_msgs(self.SG, k=self.K,
-                                  sites=[[1 / 3, 2 / 3, 1 / 3]],
-                                  centering="R")
+        results = compatible_msgs(
+            self.SG, k=self.K, sites=[[1 / 3, 2 / 3, 1 / 3]], centering="R"
+        )
         c_axis = np.array([0.0, 0.0, 1.0])
         for r in results:
             s = r.sites[0]
             if s.n_free == 0:
                 continue
             assert s.n_free == 1
-            direction = s.moment_basis[:, 0] / np.linalg.norm(s.moment_basis[:, 0])
+            direction = s.moment_basis[:, 0] / np.linalg.norm(
+                s.moment_basis[:, 0]
+            )
             assert np.allclose(np.abs(direction @ c_axis), 1.0, atol=1e-4)
 
     def test_type1_orbit_is_6(self):
         # Site symmetry C3 (3 ops); 18 ops total → orbit = 18 / 3 = 6
-        results = compatible_msgs(self.SG, k=self.K, sites=[self.CR_SITE],
-                                  centering="R")
+        results = compatible_msgs(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
         type1 = next(r for r in results if r.msg_type == 1)
         assert len(type1.sites[0].orbit) == 6
 
@@ -434,7 +470,9 @@ class TestCrCl3:
         # maxmagn selects type-IV BNS 148.20 (n_ops=36) with m||c.
         # This is the maximal MSG for out-of-plane ordering — it does NOT
         # describe the actual CrCl3 in-plane structure.
-        results = maxmagn(self.SG, k=self.K, sites=[self.CR_SITE], centering="R")
+        results = maxmagn(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
         assert len(results) == 1
         assert results[0].bns_number == "148.20"
         assert results[0].msg_type == 4
@@ -446,18 +484,24 @@ class TestCrCl3:
 
     def test_maxmagn_type4_orbit_doubled(self):
         # Type-IV MSG has 36 operators; orbit at (0,0,1/3) = 36/3 = 12
-        results = maxmagn(self.SG, k=self.K, sites=[self.CR_SITE], centering="R")
+        results = maxmagn(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
         assert len(results[0].sites[0].orbit) == 12
 
     def test_centering_invariant_at_bz_edge(self):
         # For k=(0,0,3/2) in R-3 all W@k differences are multiples of 3,
         # which satisfies both the primitive-integer and R-centering (l≡0 mod 3)
         # conditions simultaneously → centering="P" gives the same MSGs.
-        results_R = compatible_msgs(self.SG, k=self.K, sites=[self.CR_SITE],
-                                    centering="R")
-        results_P = compatible_msgs(self.SG, k=self.K, sites=[self.CR_SITE],
-                                    centering="P")
-        assert [r.uni_number for r in results_R] == [r.uni_number for r in results_P]
+        results_R = compatible_msgs(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
+        results_P = compatible_msgs(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="P"
+        )
+        assert [r.uni_number for r in results_R] == [
+            r.uni_number for r in results_P
+        ]
         for r_R, r_P in zip(results_R, results_P):
             assert r_R.sites[0].n_free == r_P.sites[0].n_free
 
@@ -465,6 +509,7 @@ class TestCrCl3:
 # ---------------------------------------------------------------------------
 # Tests for find_by_bns, analyze_msg, domain_operators
 # ---------------------------------------------------------------------------
+
 
 class TestFindByBns:
     def test_known_bns(self):
@@ -515,7 +560,7 @@ class TestAnalyzeMsg:
         # P_S 1̄ (BNS 2.7) lifts that constraint (n_free=3).
         r3 = analyze_msg("148.17", [[0, 0, 1 / 3]])
         ps1bar = analyze_msg("2.7", [[0, 0, 1 / 3]])
-        assert r3.sites[0].n_free == 1     # c-axis only in R-3
+        assert r3.sites[0].n_free == 1  # c-axis only in R-3
         assert ps1bar.sites[0].n_free == 3  # fully free in P_S 1̄
 
     def test_bns_27_unitary_inversion_couples_cr1_cr2(self):
@@ -566,11 +611,13 @@ class TestDomainOperators:
         # Equivalently: (n_broken_unique_W + n_preserved_unique_W) / n_preserved_unique_W
         # = (4 + 2) / 2 = 3.
         broken = domain_operators("2.7", parent_sg=148)
-        broken_W = {tuple(np.array(op["W"]).flatten().tolist()) for op in broken}
+        broken_W = {
+            tuple(np.array(op["W"]).flatten().tolist()) for op in broken
+        }
         # Preserved: I and -I (the 2 unique W in BNS 2.7)
         n_preserved = 2
         n_total = len(broken_W) + n_preserved  # 4 + 2 = 6
-        n_domains = n_total // n_preserved      # 6 // 2 = 3
+        n_domains = n_total // n_preserved  # 6 // 2 = 3
         assert n_domains == 3
 
     def test_type3_msg_no_broken_rotations(self):

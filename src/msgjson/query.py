@@ -55,7 +55,10 @@ def _load_table() -> list[dict]:
 # Core math helpers
 # ---------------------------------------------------------------------------
 
-def _is_integer_mod_centering(v: np.ndarray, centering: str, tol: float = 1e-4) -> bool:
+
+def _is_integer_mod_centering(
+    v: np.ndarray, centering: str, tol: float = 1e-4
+) -> bool:
     """Return True if v is a reciprocal-lattice vector for the given centering.
 
     Centering conditions (on h,k,l components of v):
@@ -104,15 +107,16 @@ def _is_k_compatible(
     avoid spurious matches.
     """
     Wk = W @ k
-    diff_plus  = Wk - theta * k
+    diff_plus = Wk - theta * k
     diff_minus = Wk + theta * k
-    return (
-        _is_integer_mod_centering(diff_plus,  centering, tol) or
-        _is_integer_mod_centering(diff_minus, centering, tol)
-    )
+    return _is_integer_mod_centering(
+        diff_plus, centering, tol
+    ) or _is_integer_mod_centering(diff_minus, centering, tol)
 
 
-def _fixes_site(W: np.ndarray, t: np.ndarray, x: np.ndarray, tol: float = 1e-4) -> bool:
+def _fixes_site(
+    W: np.ndarray, t: np.ndarray, x: np.ndarray, tol: float = 1e-4
+) -> bool:
     """Return True if (W, t) maps x to x modulo a lattice translation."""
     diff = W @ x + t - x
     return np.all(np.abs(diff - np.round(diff)) < tol)
@@ -153,7 +157,9 @@ def _moment_basis(site_ops: list[dict]) -> np.ndarray:
     return basis
 
 
-def _orbit(ops: list[dict], x: np.ndarray, tol: float = 1e-4) -> list[np.ndarray]:
+def _orbit(
+    ops: list[dict], x: np.ndarray, tol: float = 1e-4
+) -> list[np.ndarray]:
     """Return the orbit of site x under all operators, reduced to [0,1)."""
     seen: list[np.ndarray] = []
     for op in ops:
@@ -169,12 +175,13 @@ def _orbit(ops: list[dict], x: np.ndarray, tol: float = 1e-4) -> list[np.ndarray
 # Result dataclasses
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class SiteResult:
-    site: np.ndarray                  # input fractional coordinates
-    orbit: list[np.ndarray]          # all symmetry-equivalent positions
-    moment_basis: np.ndarray          # columns = allowed moment directions (3 × n)
-    n_free: int                       # number of free moment components
+    site: np.ndarray  # input fractional coordinates
+    orbit: list[np.ndarray]  # all symmetry-equivalent positions
+    moment_basis: np.ndarray  # columns = allowed moment directions (3 × n)
+    n_free: int  # number of free moment components
 
     @property
     def is_magnetic(self) -> bool:
@@ -195,6 +202,7 @@ class MSGResult:
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
 
 def compatible_msgs(
     parent_sg: int,
@@ -240,9 +248,17 @@ def compatible_msgs(
         ops = entry["operators"]
 
         # Filter operators to those compatible with k
-        k_ops = [op for op in ops
-                 if _is_k_compatible(np.array(op["W"]), op["theta"], k,
-                                     centering=centering, tol=k_tol)]
+        k_ops = [
+            op
+            for op in ops
+            if _is_k_compatible(
+                np.array(op["W"]),
+                op["theta"],
+                k,
+                centering=centering,
+                tol=k_tol,
+            )
+        ]
 
         if not k_ops:
             continue
@@ -251,28 +267,37 @@ def compatible_msgs(
         site_results = []
         for x in sites:
             # Site-symmetry ops: k-compatible ops that also fix x
-            site_ops = [op for op in k_ops
-                        if _fixes_site(np.array(op["W"]), np.array(op["t"]), x, site_tol)]
+            site_ops = [
+                op
+                for op in k_ops
+                if _fixes_site(
+                    np.array(op["W"]), np.array(op["t"]), x, site_tol
+                )
+            ]
 
             basis = _moment_basis(site_ops)
             orbit = _orbit(k_ops, x, site_tol)
 
-            site_results.append(SiteResult(
-                site=x,
-                orbit=orbit,
-                moment_basis=basis,
-                n_free=basis.shape[1],
-            ))
+            site_results.append(
+                SiteResult(
+                    site=x,
+                    orbit=orbit,
+                    moment_basis=basis,
+                    n_free=basis.shape[1],
+                )
+            )
 
-        results.append(MSGResult(
-            uni_number=entry["uni_number"],
-            bns_number=entry["bns_number"],
-            og_number=entry["og_number"],
-            msg_type=entry["type"],
-            parent_sg=entry["parent_sg"],
-            n_ops=len(ops),
-            sites=site_results,
-        ))
+        results.append(
+            MSGResult(
+                uni_number=entry["uni_number"],
+                bns_number=entry["bns_number"],
+                og_number=entry["og_number"],
+                msg_type=entry["type"],
+                parent_sg=entry["parent_sg"],
+                n_ops=len(ops),
+                sites=site_results,
+            )
+        )
 
     results.sort(key=lambda r: r.uni_number)
     return results
@@ -311,6 +336,7 @@ def maxmagn(
 # ---------------------------------------------------------------------------
 # Lookup helpers
 # ---------------------------------------------------------------------------
+
 
 def find_by_bns(bns_number: str) -> MSGResult | None:
     """Return an MSGResult (no site data) for the MSG with the given BNS number.
@@ -382,16 +408,21 @@ def analyze_msg(
 
     site_results = []
     for x in sites_np:
-        site_ops = [op for op in ops
-                    if _fixes_site(np.array(op["W"]), np.array(op["t"]), x, site_tol)]
+        site_ops = [
+            op
+            for op in ops
+            if _fixes_site(np.array(op["W"]), np.array(op["t"]), x, site_tol)
+        ]
         basis = _moment_basis(site_ops)
         orbit = _orbit(ops, x, site_tol)
-        site_results.append(SiteResult(
-            site=x,
-            orbit=orbit,
-            moment_basis=basis,
-            n_free=basis.shape[1],
-        ))
+        site_results.append(
+            SiteResult(
+                site=x,
+                orbit=orbit,
+                moment_basis=basis,
+                n_free=basis.shape[1],
+            )
+        )
 
     return MSGResult(
         uni_number=entry["uni_number"],
@@ -464,7 +495,9 @@ def domain_operators(
     parent_ops = parent_type1["operators"]
 
     # Get rotation matrices present in the MSG (any theta, any t)
-    msg_entry = next((e for e in table if e["bns_number"] == msg_bns.strip()), None)
+    msg_entry = next(
+        (e for e in table if e["bns_number"] == msg_bns.strip()), None
+    )
     if msg_entry is None:
         return []
     msg_rotations = [np.array(op["W"]) for op in msg_entry["operators"]]

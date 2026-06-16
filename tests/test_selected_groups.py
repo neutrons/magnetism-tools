@@ -21,7 +21,8 @@ def test_P1_metadata():
 def test_P1_has_identity():
     ops = get_operators(1)
     identities = [
-        o for o in ops
+        o
+        for o in ops
         if np.array_equal(o["W"], np.eye(3, dtype=int).tolist())
         and np.allclose(o["t"], [0, 0, 0])
         and o["theta"] == 1
@@ -39,12 +40,16 @@ def test_grey_group_has_antiunitary_identity():
 
 
 # Pn'ma' (BNS 62.448) – classic MSG for MnF2, FeF2, etc.
-@pytest.mark.parametrize("bns_number,expected_type", [
-    ("62.448", 3),   # Pn'ma' – type III (primed glides, same lattice)
-])
+@pytest.mark.parametrize(
+    "bns_number,expected_type",
+    [
+        ("62.448", 3),  # Pn'ma' – type III (primed glides, same lattice)
+    ],
+)
 def test_known_msg_type(bns_number, expected_type):
     # Find UNI number by scanning (small cost, only in tests)
     from msgjson.spglib_source import N_MSG
+
     for uni in range(1, N_MSG + 1):
         meta = get_metadata(uni)
         if meta["bns_number"] == bns_number:

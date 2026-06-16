@@ -47,12 +47,16 @@ def get_operators(uni_number: int) -> list[dict]:
     ops = spglib.get_magnetic_symmetry_from_database(uni_number)
 
     result = []
-    for W, t, tr in zip(ops["rotations"], ops["translations"], ops["time_reversals"]):
-        result.append({
-            "W": W.tolist(),
-            "t": [round(float(x), 8) for x in t],
-            "theta": 1 if int(tr) == 0 else -1,
-        })
+    for W, t, tr in zip(
+        ops["rotations"], ops["translations"], ops["time_reversals"]
+    ):
+        result.append(
+            {
+                "W": W.tolist(),
+                "t": [round(float(x), 8) for x in t],
+                "theta": 1 if int(tr) == 0 else -1,
+            }
+        )
     return result
 
 

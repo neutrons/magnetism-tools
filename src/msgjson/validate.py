@@ -8,7 +8,9 @@ import sys
 from .schema import validate, load_schema
 
 
-DEFAULT_FILE = pathlib.Path(__file__).parents[2] / "data" / "msg_operators.json"
+DEFAULT_FILE = (
+    pathlib.Path(__file__).parents[2] / "data" / "msg_operators.json"
+)
 
 
 def validate_file(path: pathlib.Path) -> bool:
