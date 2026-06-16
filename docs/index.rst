@@ -36,7 +36,7 @@ References
 
 .. [2] R. B. Von Dreele and L. Elcoro,
    *Acta Cryst. B: Struct. Sci.* **80**, No. 5 (2024).
-   `<https://journals.iucr.org/b/issues/2024/05/00/gar5003/index.html>`_
+   `<https://journals.iucr.org/b/issues/2024/05/00/cam5001/index.html>`_
 
 .. [3] J. Rodriguez-Carvajal, J. Gonzalez-Platas, and N. A. Katcho,
    *Acta Cryst. B: Struct. Sci.* **81**, 302 (2025).
@@ -44,4 +44,4 @@ References
 
 .. [4] M. S. Henriques, V. Petříček, S. Goswami, and M. Dušek,
    *Acta Cryst. B: Struct. Sci.* **80**, No. 5 (2024).
-   `<https://journals.iucr.org/b/issues/2024/05/00/cam5001/index.html>`_
+   `<https://journals.iucr.org/b/issues/2024/05/00/gar5003/index.html>`_
