@@ -160,10 +160,11 @@ class TestCompatibleMsgs:
         assert len(type3) > 0, "Expected at least one type-III MSG for SG136"
 
     def test_sg1_k0_trivial(self):
-        # SG1 (P1) has 3 MSGs: type-I (uni=1), grey/type-II (uni=2), type-IV (uni=3)
-        # The type-I MSG has only identity → all moment directions free (n_free=3)
+        # SG1 (P1) has 3 MSGs in the database (type-I, grey/type-II, type-IV).
+        # The type-IV MSG produces two results (origin_shift=0 and origin_shift=τ),
+        # so compatible_msgs returns 4 entries total.
         results = compatible_msgs(1, k=[0, 0, 0], sites=[[0, 0, 0]])
-        assert len(results) == 3
+        assert len(results) == 4
         type1 = next(r for r in results if r.msg_type == 1)
         assert type1.sites[0].n_free == 3
 
@@ -219,14 +220,15 @@ class TestMaxmagn:
             len(n_ops_set) == 1
         ), "All maximal MSGs should have the same n_ops"
 
-    def test_sg1_k0_returns_one(self):
-        # SG1: two MSGs allow moments (type-I with 1 op, type-IV with 2 ops).
-        # maximal_msgs picks the one(s) with the most operators among moment-allowing
-        # groups — that is the type-IV MSG (BNS 1.3, n_ops=2).
+    def test_sg1_k0_returns_two(self):
+        # SG1: the maximal moment-allowing MSG is the type-IV BNS 1.3 (n_ops=2).
+        # The type-IV MSG has two inequivalent origin choices (p=0 and p=τ),
+        # so maximal_msgs returns two results — both BNS 1.3, different origin_shift.
         results = maximal_msgs(1, k=[0, 0, 0], sites=[[0, 0, 0]])
-        assert len(results) == 1
-        assert results[0].msg_type == 4
-        assert results[0].sites[0].n_free == 3
+        assert len(results) == 2
+        assert all(r.msg_type == 4 for r in results)
+        assert all(r.sites[0].n_free == 3 for r in results)
+        assert results[0].origin_shift != results[1].origin_shift
 
     def test_nonmagnetic_site_empty(self):
         # A site at a position with full O_h symmetry in a type-I MSG should
@@ -262,9 +264,10 @@ class TestCrI3:
     CR_SITE = [0, 0, 1 / 3]  # 6c Wyckoff position in hexagonal R-3
 
     def test_compatible_msgs_count(self):
-        # SG148 has exactly 4 MSGs: type I, II (grey), III, IV
+        # SG148 has 4 MSGs (type I, II, III, IV); the type-IV MSG produces two
+        # results (one per origin_shift), so compatible_msgs returns 5 entries.
         results = compatible_msgs(self.SG, k=self.K, sites=[self.CR_SITE])
-        assert len(results) == 4
+        assert len(results) == 5
 
     def test_compatible_msgs_types(self):
         results = compatible_msgs(self.SG, k=self.K, sites=[self.CR_SITE])
@@ -300,9 +303,13 @@ class TestCrI3:
         type1 = next(r for r in results if r.msg_type == 1)
         assert len(type1.sites[0].orbit) == 6
 
-    def test_maximal_msgs_returns_one_msg(self):
+    def test_maximal_msgs_returns_two_origins(self):
+        # BNS 148.20 is the only maximal MSG (n_ops=36); the type-IV anti-translation
+        # gives two inequivalent origin choices → maximal_msgs returns 2 results.
         results = maximal_msgs(self.SG, k=self.K, sites=[self.CR_SITE])
-        assert len(results) == 1
+        assert len(results) == 2
+        assert all(r.bns_number == "148.20" for r in results)
+        assert results[0].origin_shift != results[1].origin_shift
 
     def test_maximal_msgs_moment_along_c(self):
         # All maximal magnetic MSGs must have m || [0,0,1]
@@ -388,10 +395,12 @@ class TestCrCl3:
     CR_SITE = [0, 0, 1 / 3]
 
     def test_compatible_msgs_count(self):
+        # SG148 has 4 MSGs; the type-IV MSG (148.20) yields two results
+        # (one per origin_shift) → 5 entries total.
         results = compatible_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
         )
-        assert len(results) == 4
+        assert len(results) == 5
 
     def test_compatible_msgs_types(self):
         results = compatible_msgs(
@@ -469,21 +478,26 @@ class TestCrCl3:
         type1 = next(r for r in results if r.msg_type == 1)
         assert len(type1.sites[0].orbit) == 6
 
-    def test_maximal_msgs_returns_caxis_msg_not_inplane(self):
-        # maximal_msgs selects type-IV BNS 148.20 (n_ops=36) with m||c.
-        # This is the maximal MSG for out-of-plane ordering — it does NOT
-        # describe the actual CrCl3 in-plane structure.
+    def test_maximal_msgs_returns_two_origins_caxis(self):
+        # maximal_msgs selects BNS 148.20 (n_ops=36, type-IV) with m||c.
+        # Two results are returned — one per inequivalent origin_shift of the
+        # type-IV anti-translation.  Both force m||c and do NOT describe the
+        # physical in-plane CrCl3 structure.
         results = maximal_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
         )
-        assert len(results) == 1
-        assert results[0].bns_number == "148.20"
-        assert results[0].msg_type == 4
-        s = results[0].sites[0]
-        assert s.n_free == 1
-        direction = s.moment_basis[:, 0] / np.linalg.norm(s.moment_basis[:, 0])
+        assert len(results) == 2
+        assert all(r.bns_number == "148.20" for r in results)
+        assert all(r.msg_type == 4 for r in results)
+        assert results[0].origin_shift != results[1].origin_shift
         c_axis = np.array([0.0, 0.0, 1.0])
-        assert np.allclose(np.abs(direction @ c_axis), 1.0, atol=1e-4)
+        for r in results:
+            s = r.sites[0]
+            assert s.n_free == 1
+            direction = s.moment_basis[:, 0] / np.linalg.norm(
+                s.moment_basis[:, 0]
+            )
+            assert np.allclose(np.abs(direction @ c_axis), 1.0, atol=1e-4)
 
     def test_maximal_msgs_type4_orbit_doubled(self):
         # Type-IV MSG has 36 operators; orbit at (0,0,1/3) = 36/3 = 12

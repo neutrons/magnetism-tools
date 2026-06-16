@@ -4,7 +4,7 @@ msgjson documentation
 *msgjson* provides magnetic space group (MSG) operator tables for all 1651
 commensurate Shubnikov groups and implements symmetry-analysis workflows for
 magnetic structures.  The library is inspired by the k-SUBGROUPSMAG and
-maximal_msgs workflows from the Bilbao Crystallographic Server [1]_, and is
+MAXMAGN workflows from the Bilbao Crystallographic Server [1]_, and is
 designed to complement magnetic structure refinement in GSAS-II [2]_, 
 FullProf [3]_, and Jana2020 [4]_.
 
@@ -23,6 +23,7 @@ Features
    :maxdepth: 2
    :caption: Contents:
 
+   source/tutorials
    source/modules
 
 References
