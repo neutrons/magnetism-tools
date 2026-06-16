@@ -10,6 +10,7 @@ from msgjson.query import (
     _moment_basis,
     compatible_msgs,
     maxmagn,
+    k_subgroups_mag,
     find_by_bns,
     analyze_msg,
     domain_operators,
@@ -638,3 +639,118 @@ class TestDomainOperators:
 
     def test_unknown_parent_returns_empty(self):
         assert domain_operators("136.499", parent_sg=999) == []
+
+
+# ---------------------------------------------------------------------------
+# Tests for k_subgroups_mag — cross-SG subgroup lattice traversal
+# ---------------------------------------------------------------------------
+
+
+class TestKSubgroupsMag:
+    """k_subgroups_mag: all compatible MSGs across the full subgroup lattice.
+
+    CrCl3 reference case: R-3 (SG 148), k=(0,0,3/2), R centering.
+    All 27 subgroup-lattice MSGs from R-3 (n_ops=18) down to 1.1 (n_ops=1).
+    The physical in-plane ordering lives in BNS 2.7 (P_S 1̄, n_free=3), which
+    is inaccessible from compatible_msgs (parent=148) but appears here.
+    """
+
+    SG = 148
+    K = [0, 0, 3 / 2]
+    CR_SITE = [0, 0, 1 / 3]
+    CR_SITES = [[0, 0, 1 / 3], [0, 0, 2 / 3]]
+
+    def test_returns_list_of_msgreults(self):
+        results = k_subgroups_mag(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
+        assert isinstance(results, list)
+        assert all(isinstance(r, MSGResult) for r in results)
+
+    def test_total_candidate_count(self):
+        # R-3 with k=(0,0,3/2) has exactly 27 subgroup-lattice MSGs.
+        results = k_subgroups_mag(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
+        assert len(results) == 27
+
+    def test_contains_bns_27_inplane_structure(self):
+        # BNS 2.7 (P_S 1̄, parent=2) is absent from compatible_msgs(148,...)
+        # but must appear here — it is the physical CrCl3 MSG.
+        results = k_subgroups_mag(
+            self.SG, k=self.K, sites=self.CR_SITES, centering="R"
+        )
+        bns_numbers = [r.bns_number for r in results]
+        assert "2.7" in bns_numbers
+
+    def test_contains_msg_1_1(self):
+        # Traversal reaches all the way down to the trivial group.
+        results = k_subgroups_mag(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
+        assert any(r.bns_number == "1.1" for r in results)
+
+    def test_sorted_by_n_ops_descending(self):
+        results = k_subgroups_mag(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
+        n_ops = [r.n_ops for r in results]
+        assert n_ops == sorted(n_ops, reverse=True)
+
+    def test_r3_family_forces_c_axis(self):
+        # All R-3 parent MSGs (parent_sg=148) with n_free>0 have m||c (n_free=1).
+        results = k_subgroups_mag(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
+        r3_family = [
+            r for r in results if r.parent_sg == 148 and r.sites[0].n_free > 0
+        ]
+        assert len(r3_family) > 0
+        for r in r3_family:
+            assert r.sites[0].n_free == 1
+
+    def test_bns_27_inplane_moments(self):
+        # Once 3-fold is broken (BNS 2.7 = P_S 1̄), in-plane becomes allowed.
+        results = k_subgroups_mag(
+            self.SG, k=self.K, sites=self.CR_SITES, centering="R"
+        )
+        r27 = next(r for r in results if r.bns_number == "2.7")
+        assert r27.sites[0].n_free == 3
+        assert r27.sites[1].n_free == 3
+
+    def test_type2_grey_groups_have_zero_moment(self):
+        # Type-II (grey) MSGs include antiunitary identity → m forced to 0.
+        results = k_subgroups_mag(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
+        grey = [r for r in results if r.msg_type == 2]
+        assert len(grey) > 0
+        for r in grey:
+            assert r.sites[0].n_free == 0
+
+    def test_cross_parent_sg_represented(self):
+        # Result must include MSGs with parent SGs other than 148 (R-3).
+        results = k_subgroups_mag(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
+        parent_sgs = {r.parent_sg for r in results}
+        assert 148 in parent_sgs
+        assert 2 in parent_sgs  # P-1 family
+        assert 1 in parent_sgs  # P1 family
+
+    def test_maximal_moment_allowing_is_r3_type_iv(self):
+        # Among moment-allowing MSGs (n_free>0), the highest-symmetry one is
+        # R-3 type-IV (BNS 148.20, n_ops=36).  The type-II grey group 148.18
+        # also has n_ops=36 but forces n_free=0 and is not useful for ordering.
+        results = k_subgroups_mag(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )
+        magnetic = [r for r in results if r.sites[0].n_free > 0]
+        assert magnetic[0].bns_number == "148.20"
+        assert magnetic[0].n_ops == 36
+
+    def test_unknown_parent_returns_empty(self):
+        assert (
+            k_subgroups_mag(999, k=self.K, sites=[self.CR_SITE], centering="R")
+            == []
+        )

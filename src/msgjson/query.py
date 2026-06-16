@@ -13,17 +13,16 @@ fractional coordinates of magnetic ion sites, this module:
 
 Moment transformation rule
 --------------------------
-Under operator (W, t, theta), a magnetic moment (axial vector) transforms as:
-    m' = theta * det(W) * W @ m
-A moment is site-symmetry-allowed if it is invariant under all operators
-that fix the site modulo lattice translations.
+Under operator ``(W, t, theta)``, a magnetic moment (axial vector) transforms
+as ``m' = theta * det(W) * W @ m``.  A moment is site-symmetry-allowed if it
+is invariant under all operators that fix the site modulo lattice translations.
 
 k-compatibility condition
 -------------------------
-Operator (W, t, theta) is compatible with propagation vector k if:
-    W @ k ≡ theta * k  (mod integer reciprocal lattice vectors)
-i.e. W maps k to either +k (unitary) or -k (antiunitary), up to a
-reciprocal lattice vector.  For k = 0 all operators satisfy this.
+Operator ``(W, t, theta)`` is compatible with propagation vector k if
+``W @ k ≡ theta * k  (mod reciprocal lattice vectors)``, i.e. W maps k to
+either +k (unitary) or -k (antiunitary), up to a reciprocal lattice vector.
+For k = 0 all operators satisfy this.
 """
 
 from __future__ import annotations
@@ -303,6 +302,131 @@ def compatible_msgs(
     return results
 
 
+def k_subgroups_mag(
+    parent_sg: int,
+    k: array_like,
+    sites: list[array_like],
+    *,
+    centering: str = "P",
+    k_tol: float = 1e-4,
+    site_tol: float = 1e-4,
+) -> list[MSGResult]:
+    """Find all MSGs compatible with k that are geometric subgroups of the parent SG.
+
+    Implements k-SUBGROUPSMAG-style analysis — searches across all parent SGs
+    down to MSG 1.1, not just the input parent SG.
+
+    Algorithm
+    ---------
+    1. Compute the little co-group of k: the set of unique rotation matrices W
+       from the parent SG's type-I MSG that map k to ±k (mod the centering
+       reciprocal lattice).
+    2. Search all 1651 MSGs for those whose W matrices are all contained in
+       that set.  This is the geometric subgroup criterion in the given basis.
+    3. For each candidate MSG, use all its operators for site-symmetry analysis
+       (k-compatibility is guaranteed by the little co-group filter).
+
+    Parameters
+    ----------
+    parent_sg : int
+        ITA number of the parent space group (1–230).
+    k : array_like, shape (3,)
+        Commensurate propagation vector in fractional reciprocal coordinates.
+    sites : list of array_like, shape (3,)
+        Fractional coordinates of the magnetic ion sites.
+    centering : str
+        Lattice centering of the parent cell (``"P"``, ``"R"``, ``"F"``, …).
+    k_tol, site_tol : float
+        Tolerances for k-compatibility and site-fixing comparisons.
+
+    Returns
+    -------
+    list of MSGResult sorted by n_ops descending (highest-symmetry first).
+    Includes all MSG types (I–IV) and all parent SGs in the subgroup lattice.
+    """
+    k = np.asarray(k, dtype=float)
+    sites_np = [np.asarray(s, dtype=float) for s in sites]
+    table = _load_table()
+
+    # Step 1: build the little co-group W set from the parent SG type-I MSG.
+    # Include W if k-compatible for theta=+1 OR theta=-1 (covers antiunitary ops
+    # in subgroup MSGs).
+    parent_type1 = next(
+        (e for e in table if e["parent_sg"] == parent_sg and e["type"] == 1),
+        None,
+    )
+    if parent_type1 is None:
+        return []
+
+    lcg_W: list[np.ndarray] = []
+    for op in parent_type1["operators"]:
+        W = np.array(op["W"])
+        compat_plus = _is_k_compatible(W, +1, k, centering, k_tol)
+        compat_minus = _is_k_compatible(W, -1, k, centering, k_tol)
+        if (compat_plus or compat_minus) and not any(
+            np.allclose(W, Wm, atol=k_tol) for Wm in lcg_W
+        ):
+            lcg_W.append(W)
+
+    if not lcg_W:
+        return []
+
+    # Step 2: find all MSGs whose W matrices are a subset of lcg_W.
+    results = []
+    for entry in table:
+        ops = entry["operators"]
+
+        # Collect unique W matrices for this MSG
+        msg_Ws: list[np.ndarray] = []
+        for op in ops:
+            W = np.array(op["W"])
+            if not any(np.allclose(W, Wm, atol=k_tol) for Wm in msg_Ws):
+                msg_Ws.append(W)
+
+        # All W matrices must appear in the little co-group
+        if not all(
+            any(np.allclose(W, Wm, atol=k_tol) for Wm in lcg_W) for W in msg_Ws
+        ):
+            continue
+
+        # Step 3: site-symmetry analysis using ALL operators of the MSG.
+        site_results = []
+        for x in sites_np:
+            site_ops = [
+                op
+                for op in ops
+                if _fixes_site(
+                    np.array(op["W"]), np.array(op["t"]), x, site_tol
+                )
+            ]
+            basis = _moment_basis(site_ops)
+            orbit = _orbit(ops, x, site_tol)
+            site_results.append(
+                SiteResult(
+                    site=x,
+                    orbit=orbit,
+                    moment_basis=basis,
+                    n_free=basis.shape[1],
+                )
+            )
+
+        results.append(
+            MSGResult(
+                uni_number=entry["uni_number"],
+                bns_number=entry["bns_number"],
+                og_number=entry["og_number"],
+                msg_type=entry["type"],
+                parent_sg=entry["parent_sg"],
+                n_ops=len(ops),
+                sites=site_results,
+            )
+        )
+
+    # Sort by n_ops descending (highest symmetry first), break ties by uni_number
+    results.sort(key=lambda r: (-r.n_ops, r.uni_number))
+    return results
+
+
 def maxmagn(
     parent_sg: int,
     k: array_like,
@@ -312,8 +436,9 @@ def maxmagn(
     """Return maximal compatible MSGs that allow a non-zero moment (MAXMAGN-style).
 
     Steps:
+
     1. Find all MSGs compatible with k and parent_sg.
-    2. Keep only those where at least one site has n_free > 0.
+    2. Keep only those where at least one site has ``n_free > 0``.
     3. Among those, a group is maximal if no other moment-allowing group in
        the list has strictly more operators (proxy for supergroup relation).
     """
@@ -475,7 +600,7 @@ def domain_operators(
 
     where both counts use the *point-group* (unique rotation matrices,
     ignoring translations).  For CrCl3 (R-3 → P_S1̄, BNS 2.7):
-    |S6| / |Ci| = 6 / 2 = 3 domains, while ``len(domain_operators(...))``
+    ``|S6| / |Ci| = 6 / 2 = 3`` domains, while ``len(domain_operators(...))``
     returns 12 (4 distinct broken rotations × 3 R-centering copies).
 
     For type-III MSGs within the same parent SG, this function returns an

@@ -8,6 +8,9 @@ dependencies:
   - spglib
   - jsonschema
   - pytest
+  - sphinx
+  - numpydoc
+  - pydata-sphinx-theme
   - pip
   - pip:
       - -e .
