@@ -1,8 +1,8 @@
 from ._version import __version__
 from .query import (
     compatible_msgs,
-    maxmagn,
-    k_subgroups_mag,
+    maximal_msgs,
+    subgroup_msgs,
     find_by_bns,
     analyze_msg,
     domain_operators,
@@ -13,8 +13,8 @@ from .query import (
 __all__ = [
     "__version__",
     "compatible_msgs",
-    "maxmagn",
-    "k_subgroups_mag",
+    "maximal_msgs",
+    "subgroup_msgs",
     "find_by_bns",
     "analyze_msg",
     "domain_operators",

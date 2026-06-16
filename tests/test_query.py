@@ -9,8 +9,8 @@ from msgjson.query import (
     _fixes_site,
     _moment_basis,
     compatible_msgs,
-    maxmagn,
-    k_subgroups_mag,
+    maximal_msgs,
+    subgroup_msgs,
     find_by_bns,
     analyze_msg,
     domain_operators,
@@ -174,22 +174,22 @@ class TestCompatibleMsgs:
 
 
 # ---------------------------------------------------------------------------
-# Integration tests — maxmagn (MnF2 canonical case)
+# Integration tests — maximal_msgs (MnF2 canonical case)
 # ---------------------------------------------------------------------------
 
 
 class TestMaxmagn:
     def test_mnf2_returns_results(self):
-        results = maxmagn(136, k=[0, 0, 0], sites=[[0, 0, 0]])
+        results = maximal_msgs(136, k=[0, 0, 0], sites=[[0, 0, 0]])
         assert len(results) > 0
 
     def test_mnf2_all_magnetic(self):
-        results = maxmagn(136, k=[0, 0, 0], sites=[[0, 0, 0]])
+        results = maximal_msgs(136, k=[0, 0, 0], sites=[[0, 0, 0]])
         assert all(any(s.n_free > 0 for s in r.sites) for r in results)
 
     def test_mnf2_moment_direction(self):
         # Known physics: both maximal MSGs for MnF2 have m || [0,0,1]
-        results = maxmagn(136, k=[0, 0, 0], sites=[[0, 0, 0]])
+        results = maximal_msgs(136, k=[0, 0, 0], sites=[[0, 0, 0]])
         for r in results:
             basis = r.sites[0].moment_basis
             assert (
@@ -203,17 +203,17 @@ class TestMaxmagn:
 
     def test_mnf2_two_maximal_msgs(self):
         # Two distinct type-III MSGs of P4_2/mnm allow m || [001]
-        results = maxmagn(136, k=[0, 0, 0], sites=[[0, 0, 0]])
+        results = maximal_msgs(136, k=[0, 0, 0], sites=[[0, 0, 0]])
         assert (
             len(results) == 2
         ), f"Expected 2 maximal MSGs, got {len(results)}"
 
     def test_mnf2_type3(self):
-        results = maxmagn(136, k=[0, 0, 0], sites=[[0, 0, 0]])
+        results = maximal_msgs(136, k=[0, 0, 0], sites=[[0, 0, 0]])
         assert all(r.msg_type == 3 for r in results)
 
     def test_mnf2_same_n_ops(self):
-        results = maxmagn(136, k=[0, 0, 0], sites=[[0, 0, 0]])
+        results = maximal_msgs(136, k=[0, 0, 0], sites=[[0, 0, 0]])
         n_ops_set = {r.n_ops for r in results}
         assert (
             len(n_ops_set) == 1
@@ -221,20 +221,22 @@ class TestMaxmagn:
 
     def test_sg1_k0_returns_one(self):
         # SG1: two MSGs allow moments (type-I with 1 op, type-IV with 2 ops).
-        # maxmagn picks the one(s) with the most operators among moment-allowing
+        # maximal_msgs picks the one(s) with the most operators among moment-allowing
         # groups — that is the type-IV MSG (BNS 1.3, n_ops=2).
-        results = maxmagn(1, k=[0, 0, 0], sites=[[0, 0, 0]])
+        results = maximal_msgs(1, k=[0, 0, 0], sites=[[0, 0, 0]])
         assert len(results) == 1
         assert results[0].msg_type == 4
         assert results[0].sites[0].n_free == 3
 
     def test_nonmagnetic_site_empty(self):
         # A site at a position with full O_h symmetry in a type-I MSG should
-        # return n_free=0 → maxmagn returns []
+        # return n_free=0 → maximal_msgs returns []
         # SG225 (Fm-3m), k=(0,0,0), type-I MSG (uni=1632, parent=225): all ops
         # unitary → m must be invariant under full O_h → forced to 0
         # Use centering="F" to get the correct little group
-        results = maxmagn(225, k=[0, 0, 0], sites=[[0, 0, 0]], centering="F")
+        results = maximal_msgs(
+            225, k=[0, 0, 0], sites=[[0, 0, 0]], centering="F"
+        )
         # Some MSGs in SG225 are type I (grey) with no moment; we just check
         # that the function returns a list (may be empty or non-empty depending
         # on which type-I/III/IV MSGs exist for this parent)
@@ -298,13 +300,13 @@ class TestCrI3:
         type1 = next(r for r in results if r.msg_type == 1)
         assert len(type1.sites[0].orbit) == 6
 
-    def test_maxmagn_returns_one_msg(self):
-        results = maxmagn(self.SG, k=self.K, sites=[self.CR_SITE])
+    def test_maximal_msgs_returns_one_msg(self):
+        results = maximal_msgs(self.SG, k=self.K, sites=[self.CR_SITE])
         assert len(results) == 1
 
-    def test_maxmagn_moment_along_c(self):
+    def test_maximal_msgs_moment_along_c(self):
         # All maximal magnetic MSGs must have m || [0,0,1]
-        results = maxmagn(self.SG, k=self.K, sites=[self.CR_SITE])
+        results = maximal_msgs(self.SG, k=self.K, sites=[self.CR_SITE])
         for r in results:
             s = r.sites[0]
             assert (
@@ -318,15 +320,15 @@ class TestCrI3:
                 np.abs(direction @ c_axis), 1.0, atol=1e-4
             ), f"Expected m || [001] for {r.bns_number}, got {direction}"
 
-    def test_maxmagn_bns_number(self):
-        # maxmagn selects type-IV MSG (BNS 148.20) — most operators (36)
+    def test_maximal_msgs_bns_number(self):
+        # maximal_msgs selects type-IV MSG (BNS 148.20) — most operators (36)
         # among moment-allowing MSGs
-        results = maxmagn(self.SG, k=self.K, sites=[self.CR_SITE])
+        results = maximal_msgs(self.SG, k=self.K, sites=[self.CR_SITE])
         assert results[0].bns_number == "148.20"
 
-    def test_maxmagn_type4_doubled_orbit(self):
+    def test_maximal_msgs_type4_doubled_orbit(self):
         # Type-IV MSG has 36 operators; orbit at (0,0,1/3) = 36/3 = 12
-        results = maxmagn(self.SG, k=self.K, sites=[self.CR_SITE])
+        results = maximal_msgs(self.SG, k=self.K, sites=[self.CR_SITE])
         assert results[0].msg_type == 4
         assert len(results[0].sites[0].orbit) == 12
 
@@ -378,7 +380,7 @@ class TestCrCl3:
 
     The actual CrCl3 magnetic structure occupies a non-maximal MSG whose
     parent group has lower symmetry (3-fold broken).  The tests below document
-    this limitation of the maxmagn analysis for the R-3 parent.
+    this limitation of the maximal_msgs analysis for the R-3 parent.
     """
 
     SG = 148
@@ -408,7 +410,7 @@ class TestCrCl3:
         # The C3 site symmetry at every 6c position in R-3 has no real
         # in-plane eigenvector, so every magnetic MSG gives n_free=1 with
         # the single allowed direction along c.  This confirms that the
-        # physical CrCl3 in-plane ordering CANNOT be found by maxmagn for
+        # physical CrCl3 in-plane ordering CANNOT be found by maximal_msgs for
         # parent SG 148.
         results = compatible_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
@@ -467,11 +469,11 @@ class TestCrCl3:
         type1 = next(r for r in results if r.msg_type == 1)
         assert len(type1.sites[0].orbit) == 6
 
-    def test_maxmagn_returns_caxis_msg_not_inplane(self):
-        # maxmagn selects type-IV BNS 148.20 (n_ops=36) with m||c.
+    def test_maximal_msgs_returns_caxis_msg_not_inplane(self):
+        # maximal_msgs selects type-IV BNS 148.20 (n_ops=36) with m||c.
         # This is the maximal MSG for out-of-plane ordering — it does NOT
         # describe the actual CrCl3 in-plane structure.
-        results = maxmagn(
+        results = maximal_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
         )
         assert len(results) == 1
@@ -483,9 +485,9 @@ class TestCrCl3:
         c_axis = np.array([0.0, 0.0, 1.0])
         assert np.allclose(np.abs(direction @ c_axis), 1.0, atol=1e-4)
 
-    def test_maxmagn_type4_orbit_doubled(self):
+    def test_maximal_msgs_type4_orbit_doubled(self):
         # Type-IV MSG has 36 operators; orbit at (0,0,1/3) = 36/3 = 12
-        results = maxmagn(
+        results = maximal_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
         )
         assert len(results[0].sites[0].orbit) == 12
@@ -642,12 +644,12 @@ class TestDomainOperators:
 
 
 # ---------------------------------------------------------------------------
-# Tests for k_subgroups_mag — cross-SG subgroup lattice traversal
+# Tests for subgroup_msgs — cross-SG subgroup lattice traversal
 # ---------------------------------------------------------------------------
 
 
 class TestKSubgroupsMag:
-    """k_subgroups_mag: all compatible MSGs across the full subgroup lattice.
+    """subgroup_msgs: all compatible MSGs across the full subgroup lattice.
 
     CrCl3 reference case: R-3 (SG 148), k=(0,0,3/2), R centering.
     All 27 subgroup-lattice MSGs from R-3 (n_ops=18) down to 1.1 (n_ops=1).
@@ -661,7 +663,7 @@ class TestKSubgroupsMag:
     CR_SITES = [[0, 0, 1 / 3], [0, 0, 2 / 3]]
 
     def test_returns_list_of_msgreults(self):
-        results = k_subgroups_mag(
+        results = subgroup_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
         )
         assert isinstance(results, list)
@@ -669,7 +671,7 @@ class TestKSubgroupsMag:
 
     def test_total_candidate_count(self):
         # R-3 with k=(0,0,3/2) has exactly 27 subgroup-lattice MSGs.
-        results = k_subgroups_mag(
+        results = subgroup_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
         )
         assert len(results) == 27
@@ -677,7 +679,7 @@ class TestKSubgroupsMag:
     def test_contains_bns_27_inplane_structure(self):
         # BNS 2.7 (P_S 1̄, parent=2) is absent from compatible_msgs(148,...)
         # but must appear here — it is the physical CrCl3 MSG.
-        results = k_subgroups_mag(
+        results = subgroup_msgs(
             self.SG, k=self.K, sites=self.CR_SITES, centering="R"
         )
         bns_numbers = [r.bns_number for r in results]
@@ -685,13 +687,13 @@ class TestKSubgroupsMag:
 
     def test_contains_msg_1_1(self):
         # Traversal reaches all the way down to the trivial group.
-        results = k_subgroups_mag(
+        results = subgroup_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
         )
         assert any(r.bns_number == "1.1" for r in results)
 
     def test_sorted_by_n_ops_descending(self):
-        results = k_subgroups_mag(
+        results = subgroup_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
         )
         n_ops = [r.n_ops for r in results]
@@ -699,7 +701,7 @@ class TestKSubgroupsMag:
 
     def test_r3_family_forces_c_axis(self):
         # All R-3 parent MSGs (parent_sg=148) with n_free>0 have m||c (n_free=1).
-        results = k_subgroups_mag(
+        results = subgroup_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
         )
         r3_family = [
@@ -711,7 +713,7 @@ class TestKSubgroupsMag:
 
     def test_bns_27_inplane_moments(self):
         # Once 3-fold is broken (BNS 2.7 = P_S 1̄), in-plane becomes allowed.
-        results = k_subgroups_mag(
+        results = subgroup_msgs(
             self.SG, k=self.K, sites=self.CR_SITES, centering="R"
         )
         r27 = next(r for r in results if r.bns_number == "2.7")
@@ -720,7 +722,7 @@ class TestKSubgroupsMag:
 
     def test_type2_grey_groups_have_zero_moment(self):
         # Type-II (grey) MSGs include antiunitary identity → m forced to 0.
-        results = k_subgroups_mag(
+        results = subgroup_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
         )
         grey = [r for r in results if r.msg_type == 2]
@@ -730,7 +732,7 @@ class TestKSubgroupsMag:
 
     def test_cross_parent_sg_represented(self):
         # Result must include MSGs with parent SGs other than 148 (R-3).
-        results = k_subgroups_mag(
+        results = subgroup_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
         )
         parent_sgs = {r.parent_sg for r in results}
@@ -742,7 +744,7 @@ class TestKSubgroupsMag:
         # Among moment-allowing MSGs (n_free>0), the highest-symmetry one is
         # R-3 type-IV (BNS 148.20, n_ops=36).  The type-II grey group 148.18
         # also has n_ops=36 but forces n_free=0 and is not useful for ordering.
-        results = k_subgroups_mag(
+        results = subgroup_msgs(
             self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
         )
         magnetic = [r for r in results if r.sites[0].n_free > 0]
@@ -751,6 +753,6 @@ class TestKSubgroupsMag:
 
     def test_unknown_parent_returns_empty(self):
         assert (
-            k_subgroups_mag(999, k=self.K, sites=[self.CR_SITE], centering="R")
+            subgroup_msgs(999, k=self.K, sites=[self.CR_SITE], centering="R")
             == []
         )

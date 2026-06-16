@@ -1,4 +1,4 @@
-"""Query the MSG operator table for MAXMAGN-style analysis.
+"""Query the MSG operator table for magnetic symmetry analysis.
 
 Workflow
 --------
@@ -302,7 +302,7 @@ def compatible_msgs(
     return results
 
 
-def k_subgroups_mag(
+def subgroup_msgs(
     parent_sg: int,
     k: array_like,
     sites: list[array_like],
@@ -313,7 +313,7 @@ def k_subgroups_mag(
 ) -> list[MSGResult]:
     """Find all MSGs compatible with k that are geometric subgroups of the parent SG.
 
-    Implements k-SUBGROUPSMAG-style analysis — searches across all parent SGs
+    Inspired by the Bilbao k-SUBGROUPSMAG workflow [1]_ — searches across all parent SGs
     down to MSG 1.1, not just the input parent SG.
 
     Algorithm
@@ -343,6 +343,10 @@ def k_subgroups_mag(
     -------
     list of MSGResult sorted by n_ops descending (highest-symmetry first).
     Includes all MSG types (I–IV) and all parent SGs in the subgroup lattice.
+
+    References
+    ----------
+    .. [1] J. M. Perez-Mato et al., *Annu. Rev. Mater. Res.* **45**, 217 (2015).
     """
     k = np.asarray(k, dtype=float)
     sites_np = [np.asarray(s, dtype=float) for s in sites]
@@ -427,13 +431,15 @@ def k_subgroups_mag(
     return results
 
 
-def maxmagn(
+def maximal_msgs(
     parent_sg: int,
     k: array_like,
     sites: list[array_like],
     **kwargs,
 ) -> list[MSGResult]:
-    """Return maximal compatible MSGs that allow a non-zero moment (MAXMAGN-style).
+    """Return maximal compatible MSGs that allow a non-zero moment.
+
+    Inspired by the Bilbao MAXMAGN workflow [1]_.
 
     Steps:
 
@@ -441,6 +447,10 @@ def maxmagn(
     2. Keep only those where at least one site has ``n_free > 0``.
     3. Among those, a group is maximal if no other moment-allowing group in
        the list has strictly more operators (proxy for supergroup relation).
+
+    References
+    ----------
+    .. [1] J. M. Perez-Mato et al., *Annu. Rev. Mater. Res.* **45**, 217 (2015).
     """
     all_results = compatible_msgs(parent_sg, k, sites, **kwargs)
 
