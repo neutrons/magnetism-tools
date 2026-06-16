@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>msgjson &#8212; msgjson  documentation</title>
+    <title>Tutorials &#8212; msgjson  documentation</title>
   
   
   
@@ -41,12 +41,12 @@
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'source/modules';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'source/tutorials';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="msgjson package" href="msgjson.html" />
-    <link rel="prev" title="MnO — Type-II antiferromagnet on an FCC lattice" href="tutorial_mno.html" />
+    <link rel="next" title="MnF2 — Maximal magnetic space group" href="tutorial_mnf2.html" />
+    <link rel="prev" title="msgjson documentation" href="../index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -131,15 +131,15 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="tutorials.html">
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
     Tutorials
   </a>
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="modules.html">
     msgjson
   </a>
 </li>
@@ -235,15 +235,15 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="tutorials.html">
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
     Tutorials
   </a>
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="modules.html">
     msgjson
   </a>
 </li>
@@ -305,7 +305,10 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="msgjson.html">msgjson package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_mnf2.html">MnF<sub>2</sub> — Maximal magnetic space group</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_crcl3.html">CrCl<sub>3</sub> — Subgroup lattice search for non-maximal ordering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_rucl3.html">α-RuCl<sub>3</sub> — Zigzag order and the role of the k-vector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_mno.html">MnO — Type-II antiferromagnet on an FCC lattice</a></li>
 </ul>
 </div>
 </nav></div>
@@ -346,7 +349,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">msgjson</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorials</span></li>
   </ul>
 </nav>
 </div>
@@ -363,94 +366,14 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="msgjson">
-<h1>msgjson<a class="headerlink" href="#msgjson" title="Link to this heading">#</a></h1>
+  <section id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="msgjson.html">msgjson package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="msgjson.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="msgjson.html#module-msgjson.build">msgjson.build module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.build.build_table"><code class="docutils literal notranslate"><span class="pre">build_table()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.build.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="msgjson.html#module-msgjson.query">msgjson.query module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#workflow">Workflow</a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#moment-transformation-rule">Moment transformation rule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#k-compatibility-condition">k-compatibility condition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.query.MSGResult"><code class="docutils literal notranslate"><span class="pre">MSGResult</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.MSGResult.bns_number"><code class="docutils literal notranslate"><span class="pre">MSGResult.bns_number</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.MSGResult.msg_type"><code class="docutils literal notranslate"><span class="pre">MSGResult.msg_type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.MSGResult.n_ops"><code class="docutils literal notranslate"><span class="pre">MSGResult.n_ops</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.MSGResult.og_number"><code class="docutils literal notranslate"><span class="pre">MSGResult.og_number</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.MSGResult.origin_shift"><code class="docutils literal notranslate"><span class="pre">MSGResult.origin_shift</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.MSGResult.parent_sg"><code class="docutils literal notranslate"><span class="pre">MSGResult.parent_sg</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.MSGResult.sites"><code class="docutils literal notranslate"><span class="pre">MSGResult.sites</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.MSGResult.uni_number"><code class="docutils literal notranslate"><span class="pre">MSGResult.uni_number</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.query.SiteResult"><code class="docutils literal notranslate"><span class="pre">SiteResult</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.SiteResult.is_magnetic"><code class="docutils literal notranslate"><span class="pre">SiteResult.is_magnetic</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.SiteResult.moment_basis"><code class="docutils literal notranslate"><span class="pre">SiteResult.moment_basis</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.SiteResult.n_free"><code class="docutils literal notranslate"><span class="pre">SiteResult.n_free</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.SiteResult.orbit"><code class="docutils literal notranslate"><span class="pre">SiteResult.orbit</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.query.SiteResult.site"><code class="docutils literal notranslate"><span class="pre">SiteResult.site</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.query.analyze_msg"><code class="docutils literal notranslate"><span class="pre">analyze_msg()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.query.compatible_msgs"><code class="docutils literal notranslate"><span class="pre">compatible_msgs()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.query.domain_operators"><code class="docutils literal notranslate"><span class="pre">domain_operators()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.query.find_by_bns"><code class="docutils literal notranslate"><span class="pre">find_by_bns()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.query.maximal_msgs"><code class="docutils literal notranslate"><span class="pre">maximal_msgs()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.query.subgroup_msgs"><code class="docutils literal notranslate"><span class="pre">subgroup_msgs()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="msgjson.html#module-msgjson.schema">msgjson.schema module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.schema.load_schema"><code class="docutils literal notranslate"><span class="pre">load_schema()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.schema.validate"><code class="docutils literal notranslate"><span class="pre">validate()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="msgjson.html#module-msgjson.spglib_source">msgjson.spglib_source module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#notes">Notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.spglib_source.get_metadata"><code class="docutils literal notranslate"><span class="pre">get_metadata()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.spglib_source.get_operators"><code class="docutils literal notranslate"><span class="pre">get_operators()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.spglib_source.iter_all_msgs"><code class="docutils literal notranslate"><span class="pre">iter_all_msgs()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="msgjson.html#module-msgjson.validate">msgjson.validate module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.validate.validate_file"><code class="docutils literal notranslate"><span class="pre">validate_file()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="msgjson.html#module-msgjson">Module contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.MSGResult"><code class="docutils literal notranslate"><span class="pre">MSGResult</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.MSGResult.bns_number"><code class="docutils literal notranslate"><span class="pre">MSGResult.bns_number</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.MSGResult.msg_type"><code class="docutils literal notranslate"><span class="pre">MSGResult.msg_type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.MSGResult.n_ops"><code class="docutils literal notranslate"><span class="pre">MSGResult.n_ops</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.MSGResult.og_number"><code class="docutils literal notranslate"><span class="pre">MSGResult.og_number</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.MSGResult.origin_shift"><code class="docutils literal notranslate"><span class="pre">MSGResult.origin_shift</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.MSGResult.parent_sg"><code class="docutils literal notranslate"><span class="pre">MSGResult.parent_sg</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.MSGResult.sites"><code class="docutils literal notranslate"><span class="pre">MSGResult.sites</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.MSGResult.uni_number"><code class="docutils literal notranslate"><span class="pre">MSGResult.uni_number</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.SiteResult"><code class="docutils literal notranslate"><span class="pre">SiteResult</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.SiteResult.is_magnetic"><code class="docutils literal notranslate"><span class="pre">SiteResult.is_magnetic</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.SiteResult.moment_basis"><code class="docutils literal notranslate"><span class="pre">SiteResult.moment_basis</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.SiteResult.n_free"><code class="docutils literal notranslate"><span class="pre">SiteResult.n_free</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.SiteResult.orbit"><code class="docutils literal notranslate"><span class="pre">SiteResult.orbit</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="msgjson.html#msgjson.SiteResult.site"><code class="docutils literal notranslate"><span class="pre">SiteResult.site</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.analyze_msg"><code class="docutils literal notranslate"><span class="pre">analyze_msg()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.compatible_msgs"><code class="docutils literal notranslate"><span class="pre">compatible_msgs()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.domain_operators"><code class="docutils literal notranslate"><span class="pre">domain_operators()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.find_by_bns"><code class="docutils literal notranslate"><span class="pre">find_by_bns()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.maximal_msgs"><code class="docutils literal notranslate"><span class="pre">maximal_msgs()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="msgjson.html#msgjson.subgroup_msgs"><code class="docutils literal notranslate"><span class="pre">subgroup_msgs()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_mnf2.html">MnF<sub>2</sub> — Maximal magnetic space group</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_crcl3.html">CrCl<sub>3</sub> — Subgroup lattice search for non-maximal ordering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_rucl3.html">α-RuCl<sub>3</sub> — Zigzag order and the role of the k-vector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_mno.html">MnO — Type-II antiferromagnet on an FCC lattice</a></li>
 </ul>
 </div>
 </section>
@@ -466,20 +389,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="tutorial_mno.html"
+       href="../index.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">MnO — Type-II antiferromagnet on an FCC lattice</p>
+        <p class="prev-next-title">msgjson documentation</p>
       </div>
     </a>
     <a class="right-next"
-       href="msgjson.html"
+       href="tutorial_mnf2.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">msgjson package</p>
+        <p class="prev-next-title">MnF<sub>2</sub> — Maximal magnetic space group</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
