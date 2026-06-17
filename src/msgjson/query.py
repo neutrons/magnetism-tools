@@ -494,7 +494,15 @@ def maximal_msgs(
     """Return k-maximal compatible MSGs that allow a non-zero moment.
 
     Implements the Bilbao MAXMAGN definition [1]_: a MSG is k-maximal if no
-    k-compatible supergroup exists in the subgroup lattice of G1'.
+    k-compatible supergroup exists anywhere in the subgroup lattice of G1'.
+    Only commensurate 1k orderings are considered.
+
+    Each k-maximal MSG represents one **conjugacy class** of physically
+    equivalent domain-related orderings.  For type-IV MSGs the function
+    additionally appends the τ-shifted origin variant — these two results
+    correspond to what MAXMAGN calls "alternatives (domain-related)" within the
+    same conjugacy class.  All other domain variants (rotational domains from
+    broken spatial symmetry) are accessible via :func:`domain_operators`.
 
     For **k = 0** the little co-group equals the full parent SG point group, so
     ``subgroup_msgs`` would include MSGs from unrelated SGs that happen to share
@@ -797,6 +805,170 @@ def domain_operators(
             broken.append(op)
 
     return broken
+
+
+def orbit_moments(
+    msg_result: MSGResult,
+    site_idx: int,
+    m_ref: np.ndarray,
+    k: array_like,
+    *,
+    centering: str = "P",
+    k_tol: float = 1e-4,
+    site_tol: float = 1e-4,
+) -> list[tuple[np.ndarray, np.ndarray]]:
+    """Return (position, moment) pairs for all orbit sites.
+
+    Starting from a reference moment *m_ref* at ``msg_result.sites[site_idx]``,
+    the function finds the k-compatible MSG operator that maps the reference
+    site to each orbit position and applies the moment transformation rule::
+
+        m' = θ · det(W) · W @ m
+
+    Parameters
+    ----------
+    msg_result : MSGResult
+        Result from :func:`maximal_msgs`, :func:`subgroup_msgs`, or
+        :func:`analyze_msg`.
+    site_idx : int
+        Index into ``msg_result.sites`` selecting the reference site.
+    m_ref : array_like, shape (3,)
+        Moment vector at the reference site in μ_B (or any consistent unit).
+        Must lie within the symmetry-allowed subspace; use
+        ``s.moment_basis @ amplitudes`` to build it from the basis.
+    k : array_like, shape (3,)
+        Propagation vector in reciprocal-lattice units.
+    centering : str
+        Lattice centering symbol (``"P"``, ``"F"``, ``"I"``, ``"R"``, etc.).
+    k_tol : float
+        Tolerance for k-compatibility check.
+    site_tol : float
+        Tolerance for position matching.
+
+    Returns
+    -------
+    list of (r, m) tuples
+        *r* — fractional position in [0, 1)³, shape (3,)
+        *m* — moment vector at that position, shape (3,)
+        The list starts with the reference site.
+    """
+    m_ref = np.asarray(m_ref, dtype=float)
+    k_np = np.asarray(k, dtype=float)
+    s = msg_result.sites[site_idx]
+    r_ref = s.site
+
+    entry = next(
+        e for e in _load_table() if e["bns_number"] == msg_result.bns_number
+    )
+    ops = entry["operators"]
+    k_ops = [
+        op
+        for op in ops
+        if _is_k_compatible(
+            np.array(op["W"]),
+            op["theta"],
+            k_np,
+            centering=centering,
+            tol=k_tol,
+        )
+    ]
+
+    result: list[tuple[np.ndarray, np.ndarray]] = [
+        (r_ref.copy(), m_ref.copy())
+    ]
+
+    for r_orb in s.orbit:
+        if np.allclose(r_orb, r_ref, atol=site_tol):
+            continue
+        for op in k_ops:
+            W = np.array(op["W"], dtype=float)
+            t = np.array(op["t"], dtype=float)
+            r_mapped = (W @ r_ref + t) % 1.0
+            if np.allclose(r_mapped, r_orb, atol=site_tol):
+                m_orb = op["theta"] * np.linalg.det(W) * W @ m_ref
+                result.append((r_orb.copy(), m_orb))
+                break
+
+    return result
+
+
+def magnetic_structure_factors(
+    site_moments: list[tuple[np.ndarray, np.ndarray]],
+    hkl: list[tuple[int, int, int]],
+    k: array_like,
+    *,
+    lattice: np.ndarray | None = None,
+    ion: str | None = None,
+    c2: float = 0.0,
+) -> np.ndarray:
+    """Return :math:`|F_M(Q)|^2` for magnetic satellite reflections Q = hkl + k.
+
+    The magnetic structure factor is:
+
+    .. math::
+
+        F_M(\\mathbf{Q}) = \\sum_j f(|Q|)\\, \\mathbf{m}_j\\,
+                           e^{2\\pi i \\mathbf{Q} \\cdot \\mathbf{r}_j}
+
+    where the sum runs over all orbit sites supplied in *site_moments*.
+    For spin-only moments ``f(|Q|) = <j0(|Q|)>``; passing *lattice* and *ion*
+    enables the form-factor correction.
+
+    Parameters
+    ----------
+    site_moments : list of (r, m) tuples
+        Output of :func:`orbit_moments`.  *r* in fractional coordinates,
+        *m* in μ_B (or arbitrary consistent units).
+    hkl : list of (h, k, l)
+        Nuclear reflection indices.  The magnetic satellite is at Q = hkl + k.
+    k : array_like, shape (3,)
+        Propagation vector.
+    lattice : ndarray, shape (3, 3), optional
+        Real-space lattice matrix **a** = lattice[0], **b** = lattice[1],
+        **c** = lattice[2] in Å.  Required when *ion* is given.
+    ion : str, optional
+        Ion label for the magnetic form factor (e.g. ``"Mn2+"``, ``"Cr3+"``).
+        Requires *lattice*.  When omitted f(Q) = 1 for all reflections.
+    c2 : float
+        ``<j2>`` coefficient for the orbital form-factor correction (default 0).
+
+    Returns
+    -------
+    ndarray, shape (len(hkl),)
+        :math:`|F_M(\\mathbf{Q})|^2` in μ_B² (or the square of whatever unit
+        *m* was given in).  This does **not** include the geometric
+        :math:`\\sin^2\\!\\alpha` factor; multiply by
+        ``1 − (m̂ · Q̂)²`` to obtain the physical neutron cross-section term.
+    """
+    from .form_factors import form_factor as _ff
+
+    k_np = np.asarray(k, dtype=float)
+
+    # Reciprocal lattice metric: used to convert hkl → Å⁻¹
+    if lattice is not None:
+        lat = np.asarray(lattice, dtype=float)
+        # B-matrix maps fractional reciprocal coords to Cartesian (Å⁻¹)
+        # Using the relation: reciprocal vectors b* = 2π (a × a / V) etc.
+        # For |Q|: |Q|² = Q_frac · G* · Q_frac where G* = B^T B with B = 2π (lat^-1)^T
+        B = 2 * np.pi * np.linalg.inv(lat).T  # columns = a*, b*, c* in Å⁻¹
+
+    f2 = np.zeros(len(hkl))
+    for i, hkl_i in enumerate(hkl):
+        Q_frac = np.array(hkl_i, dtype=float) + k_np
+        F = np.zeros(3, dtype=complex)
+        for r, m in site_moments:
+            phase = np.exp(2j * np.pi * float(np.dot(Q_frac, r)))
+            F += m * phase
+
+        if ion is not None and lattice is not None:
+            Q_cart = B @ Q_frac
+            Q_mag = float(np.linalg.norm(Q_cart))
+            ff = _ff(ion, Q_mag, c2=c2)
+            F *= ff
+
+        f2[i] = float(np.real(np.dot(F.conj(), F)))
+
+    return f2
 
 
 # type alias for cleaner annotations above

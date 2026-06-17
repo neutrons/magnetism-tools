@@ -14,10 +14,18 @@ Features
 - Operator tables for all 1651 commensurate MSGs (types I–IV)
 - k-vector compatibility filtering with centering-aware reciprocal lattice
 - Site-symmetry moment basis via SVD null-space analysis
-- Maximal MSG selection (``maximal_msgs``)
-- Full subgroup lattice search (``subgroup_msgs``)
-- Direct lower-symmetry MSG analysis 
-- Domain operator enumeration
+- **k-maximal MSG selection** (``maximal_msgs``) — implements the Bilbao MAXMAGN
+  definition; returns one entry per conjugacy class plus its domain-related
+  origin variants (MAXMAGN "alternatives (domain-related)")
+- **Full subgroup lattice search** (``subgroup_msgs``) — controlled descent to
+  lower symmetries including cross-parent-SG candidates
+- Direct MSG analysis for a known BNS number (``analyze_msg``)
+- Domain operator enumeration (``domain_operators``)
+- Magnetic orbit moments with full operator transformation (``orbit_moments``)
+- Magnetic structure factor :math:`|F_M|^2` with optional form-factor scaling
+  (``magnetic_structure_factors``)
+- Magnetic form factors :math:`\langle j_0 \rangle` and :math:`\langle j_2 \rangle`
+  for 3d, 4d, and lanthanide/actinide ions (``form_factor``, ``j0``, ``j2``)
 
 .. toctree::
    :maxdepth: 2

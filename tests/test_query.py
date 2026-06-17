@@ -14,9 +14,12 @@ from msgjson.query import (
     find_by_bns,
     analyze_msg,
     domain_operators,
+    orbit_moments,
+    magnetic_structure_factors,
     MSGResult,
     SiteResult,
 )
+from msgjson.form_factors import form_factor, j0, j2, available_ions
 
 
 # ---------------------------------------------------------------------------
@@ -770,3 +773,194 @@ class TestKSubgroupsMag:
             subgroup_msgs(999, k=self.K, sites=[self.CR_SITE], centering="R")
             == []
         )
+
+
+# ---------------------------------------------------------------------------
+# Form factor tests
+# ---------------------------------------------------------------------------
+
+
+class TestFormFactor:
+    def test_j0_at_zero_is_unity(self):
+        # <j0(0)> must be A+B+C+D ≈ 1 for all ions
+        for ion in ["Mn2+", "Cr3+", "Fe3+", "Ni2+"]:
+            assert abs(j0(ion, 0.0) - 1.0) < 0.01, f"{ion}: j0(0) ≠ 1"
+
+    def test_j0_decreasing_with_q(self):
+        # Form factor should decrease with |Q|
+        f0 = j0("Mn2+", 0.0)
+        f2 = j0("Mn2+", 2.0)
+        f4 = j0("Mn2+", 4.0)
+        assert f0 > f2 > f4
+
+    def test_j2_at_zero_is_zero(self):
+        # <j2(0)> → 0 as Q → 0 (l=2 Bessel function)
+        for ion in ["Mn2+", "Fe3+", "Cr3+"]:
+            assert abs(j2(ion, 0.0)) < 0.01, f"{ion}: j2(0) ≠ 0"
+
+    def test_form_factor_no_c2_equals_j0(self):
+        assert form_factor("Mn2+", 1.5) == j0("Mn2+", 1.5)
+
+    def test_form_factor_with_c2(self):
+        f = form_factor("Mn2+", 1.5, c2=0.5)
+        assert abs(f - (j0("Mn2+", 1.5) + 0.5 * j2("Mn2+", 1.5))) < 1e-12
+
+    def test_case_insensitive_lookup(self):
+        assert abs(j0("mn2+", 0.5) - j0("Mn2+", 0.5)) < 1e-12
+
+    def test_unknown_ion_raises(self):
+        with pytest.raises(KeyError):
+            j0("Unobtainium3+", 1.0)
+
+    def test_available_ions_nonempty(self):
+        ions = available_ions()
+        assert len(ions) > 10
+        assert "Mn2+" in ions
+        assert "Cr3+" in ions
+
+
+# ---------------------------------------------------------------------------
+# orbit_moments tests
+# ---------------------------------------------------------------------------
+
+
+class TestOrbitMoments:
+    """MnF2: SG 136 (P4_2/mnm), k=0, type-III MSG 136.499."""
+
+    SG = 136
+    K = [0, 0, 0]
+    SITE = [0.0, 0.0, 0.0]
+
+    def _top(self):
+        return maximal_msgs(self.SG, k=self.K, sites=[self.SITE])[0]
+
+    def test_orbit_has_two_sites(self):
+        r = self._top()
+        m = np.array([0.0, 0.0, 5.0])
+        moms = orbit_moments(r, 0, m, self.K)
+        assert len(moms) == 2
+
+    def test_reference_site_is_first(self):
+        r = self._top()
+        m = np.array([0.0, 0.0, 5.0])
+        moms = orbit_moments(r, 0, m, self.K)
+        assert np.allclose(moms[0][0], self.SITE, atol=1e-4)
+        assert np.allclose(moms[0][1], m, atol=1e-4)
+
+    def test_antiparallel_second_site(self):
+        # Type-III MSG: second Mn at (0.5,0.5,0.5) has m reversed.
+        r = self._top()
+        m = np.array([0.0, 0.0, 5.0])
+        moms = orbit_moments(r, 0, m, self.K)
+        r1, m1 = moms[1]
+        assert np.allclose(r1, [0.5, 0.5, 0.5], atol=1e-4)
+        assert np.allclose(m1, [0.0, 0.0, -5.0], atol=1e-4)
+
+    def test_moment_magnitude_preserved(self):
+        r = self._top()
+        m = np.array([0.0, 0.0, 3.7])
+        moms = orbit_moments(r, 0, m, self.K)
+        for _, mi in moms:
+            assert abs(np.linalg.norm(mi) - 3.7) < 1e-6
+
+
+class TestOrbitMomentsCrCl3:
+    """CrCl3: SG 148, k=(0,0,3/2), type-IV MSG 148.20, orbit=12."""
+
+    SG = 148
+    K = [0, 0, 1.5]
+    CR_SITE = [0, 0, 1 / 3]
+
+    def _top(self):
+        return maximal_msgs(
+            self.SG, k=self.K, sites=[self.CR_SITE], centering="R"
+        )[0]
+
+    def test_orbit_size(self):
+        r = self._top()
+        m = np.array([0.0, 0.0, 3.0])
+        moms = orbit_moments(r, 0, m, self.K, centering="R")
+        assert len(moms) == 12
+
+    def test_moments_alternate_sign(self):
+        # For m || c, the orbit must contain both +m and -m sublattices.
+        r = self._top()
+        m = np.array([0.0, 0.0, 3.0])
+        moms = orbit_moments(r, 0, m, self.K, centering="R")
+        mz = np.array([mi[2] for _, mi in moms])
+        assert np.any(mz > 2.9)
+        assert np.any(mz < -2.9)
+
+    def test_magnitude_preserved(self):
+        r = self._top()
+        m = np.array([0.0, 0.0, 3.0])
+        moms = orbit_moments(r, 0, m, self.K, centering="R")
+        for _, mi in moms:
+            assert abs(np.linalg.norm(mi) - 3.0) < 1e-6
+
+
+# ---------------------------------------------------------------------------
+# magnetic_structure_factors tests
+# ---------------------------------------------------------------------------
+
+
+class TestMagneticStructureFactors:
+    """MnF2: SG 136 (P4_2/mnm), k=0, type-III MSG 136.499.
+
+    Selection rule: |F_M|² nonzero iff h+k+l is odd.
+    """
+
+    SG = 136
+    K = [0, 0, 0]
+    SITE = [0.0, 0.0, 0.0]
+    LATTICE = np.diag([4.873, 4.873, 3.306])  # MnF2 in Å
+
+    def _site_moms(self, m_amp=5.0):
+        r = maximal_msgs(self.SG, k=self.K, sites=[self.SITE])[0]
+        m = m_amp * r.sites[0].moment_basis[:, 0]
+        return orbit_moments(r, 0, m, self.K), m_amp
+
+    def test_odd_hkl_nonzero(self):
+        moms, _ = self._site_moms()
+        F2 = magnetic_structure_factors(
+            moms, [(1, 0, 0), (0, 0, 1), (1, 1, 1)], self.K
+        )
+        assert np.all(F2 > 1.0)
+
+    def test_even_hkl_zero(self):
+        moms, _ = self._site_moms()
+        F2 = magnetic_structure_factors(
+            moms, [(1, 0, 1), (1, 1, 0), (2, 0, 0)], self.K
+        )
+        assert np.all(F2 < 1e-10)
+
+    def test_structure_factor_scales_with_moment(self):
+        moms1, amp1 = self._site_moms(m_amp=3.0)
+        moms2, amp2 = self._site_moms(m_amp=6.0)
+        F2_1 = magnetic_structure_factors(moms1, [(1, 0, 0)], self.K)
+        F2_2 = magnetic_structure_factors(moms2, [(1, 0, 0)], self.K)
+        assert abs(F2_2[0] / F2_1[0] - (amp2 / amp1) ** 2) < 1e-6
+
+    def test_form_factor_reduces_intensity(self):
+        # Form factor < 1 at finite Q → |F_M|² with ff < |F_M|² without ff.
+        moms, _ = self._site_moms()
+        hkl = [(1, 0, 0)]
+        F2_bare = magnetic_structure_factors(moms, hkl, self.K)
+        F2_ff = magnetic_structure_factors(
+            moms, hkl, self.K, lattice=self.LATTICE, ion="Mn2+"
+        )
+        assert F2_ff[0] < F2_bare[0]
+
+    def test_result_shape(self):
+        moms, _ = self._site_moms()
+        hkl = [(1, 0, 0), (0, 0, 1), (1, 1, 1)]
+        F2 = magnetic_structure_factors(moms, hkl, self.K)
+        assert F2.shape == (3,)
+
+    def test_zero_moment_gives_zero_f2(self):
+        moms = [
+            (np.array([0.0, 0.0, 0.0]), np.array([0.0, 0.0, 0.0])),
+            (np.array([0.5, 0.5, 0.5]), np.array([0.0, 0.0, 0.0])),
+        ]
+        F2 = magnetic_structure_factors(moms, [(1, 0, 0)], [0, 0, 0])
+        assert F2[0] < 1e-20

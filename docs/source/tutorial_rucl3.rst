@@ -1,14 +1,12 @@
-α-RuCl\ :sub:`3` — Zigzag order and the role of the k-vector
-=============================================================
+α-RuCl\ :sub:`3` — Zigzag antiferromagnet, k = (0, ½, 1)
+==========================================================
 
-α-RuCl\ :sub:`3` adopts the R\ :math:`\bar{3}` structure (No. 148) at low
-temperature and orders in a zigzag pattern with propagation vector
-**k** = (0, 1/2, 1) in the hexagonal setting.  The Ru\ :sup:`3+` ions
-occupy the 6c Wyckoff site.
-
-This tutorial shows how the choice of **k** affects the symmetry analysis,
-producing a qualitatively different result from CrCl\ :sub:`3` despite both
-materials sharing the same parent space group.
+α-RuCl\ :sub:`3` orders below :math:`T_N \approx 7` K in a zigzag
+antiferromagnetic pattern with Ru\ :sup:`3+` moments in the ab-plane [2]_.
+Space group :math:`R\bar{3}` (No. 148), propagation vector
+**k** = (0, ½, 1) (hexagonal setting).  The k-maximal MSG is already
+BNS 2.7 (:math:`P_S\bar{1}`, type IV) — no symmetry breaking beyond the
+maximal is required to allow in-plane moments.
 
 Setup
 -----
@@ -16,31 +14,14 @@ Setup
 .. code-block:: python
 
    import numpy as np
-   from msgjson import maximal_msgs, subgroup_msgs, analyze_msg
+   from msgjson import maximal_msgs, orbit_moments, magnetic_structure_factors
 
-   SG      = 148              # R-3
-   K       = [0, 0.5, 1.0]   # zigzag propagation vector (hexagonal setting)
-   RU_SITE = [0, 0, 1/3]     # Ru^3+ at 6c
+   SG      = 148
+   K       = [0, 0.5, 1.0]
+   RU_SITE = [0, 0, 1/3]   # Ru^3+ Wyckoff 6c
 
-The little co-group of **k**
------------------------------
-
-The first step is to identify which rotation matrices map **k** to ±**k**
-modulo the R-centered reciprocal lattice.  For CrCl\ :sub:`3` with
-**k** = (0, 0, 3/2) the entire S\ :sub:`6` point group (all six rotations
-of R\ :math:`\bar{3}`) was k-compatible.  For α-RuCl\ :sub:`3` the
-situation is different:
-
-- The C\ :sub:`3` rotation maps (0, 1/2, 1) → (1/2, 0, 1), which
-  is **not** equivalent to ±**k** modulo the R lattice.
-- Only the identity **E** and inversion **i** satisfy the k-compatibility
-  condition.
-
-The little co-group is therefore C\ :sub:`i` = {**E**, **i**}, a strict
-subgroup of S\ :sub:`6`.  This has direct consequences for moment symmetry.
-
-Maximal MSGs
-------------
+Magnetic space group
+--------------------
 
 .. code-block:: python
 
@@ -48,108 +29,84 @@ Maximal MSGs
 
    for r in top:
        s = r.sites[0]
-       print(
-           f"BNS {r.bns_number}  type={r.msg_type}  parent_sg={r.parent_sg}"
-           f"  n_ops={r.n_ops}  n_free={s.n_free}"
-           f"  orbit={len(s.orbit)}  origin={r.origin_shift}"
-       )
+       print(f"BNS {r.bns_number}  type={r.msg_type}  n_ops={r.n_ops}"
+             f"  n_free={s.n_free}  origin={r.origin_shift}")
 
 .. code-block:: text
 
-   BNS 2.7  type=4  parent_sg=2  n_ops=4  n_free=3  orbit=4  origin=(0.0, 0.0, 0.0)
-   BNS 2.7  type=4  parent_sg=2  n_ops=4  n_free=3  orbit=4  origin=(0.0, 0.0, 0.5)
+   BNS 2.7  type=4  n_ops=4  n_free=3  origin=(0.0, 0.0, 0.0)
+   BNS 2.7  type=4  n_ops=4  n_free=3  origin=(0.0, 0.0, 0.5)
 
-The k-maximal MSG is BNS 2.7 (:math:`P_S\bar{1}`, type IV), whose parent
-space group is SG 2 (P\ :math:`\bar{1}`) — **not** the input parent SG 148
-(R\ :math:`\bar{3}`).  This is the defining feature of the Bilbao MAXMAGN
-definition [1]_: a MSG is k-maximal if it has *no k-compatible supergroup*
-anywhere in the subgroup lattice of G1'.  Because the little co-group of
-**k** = (0, 1/2, 1) contains only W ∈ {**E**, **i**}, the entire R-3
-operator set lies outside the little co-group.  No MSG belonging to
-SG 148 can be k-compatible — the k-maximal MSG therefore crosses the
-parent-SG boundary to the P\ :math:`\bar{1}` family.
+Two domain states arising from the two inequivalent positions of the
+anti-translation τ = (0, 0, ½).  Both give the same :math:`|F_M|^2`.
+``n_free = 3`` — any moment direction is symmetry-allowed.
 
-The two results again represent inequivalent origin placements (domain
-states) of the type-IV anti-translation τ = (0, 0, 1/2).
-
-n_free = 3 for both: with no C\ :sub:`3` constraint anywhere in the
-P\ :math:`\bar{1}` symmetry, all moment directions — including in-plane
-— are already allowed at the maximal level.  This contrasts with
-CrCl\ :sub:`3`, where the k-maximal MSG (also BNS 148.20) imposed m ‖ c.
-
-Subgroup lattice
-----------------
+Moment orbit
+------------
 
 .. code-block:: python
 
-   all_r = subgroup_msgs(SG, k=K, sites=[RU_SITE], centering="R")
-   print(f"{len(all_r)} candidate MSGs\n")
+   r = top[0]
+   m_amp = 0.5                          # μ_B, Ru³⁺ ordered moment
+   m_ref = m_amp * np.array([1.0, 0.0, 0.0])   # in-plane, along a*
 
-   print(f"{'BNS':10s}  type  parent  n_ops  n_free")
-   for r in all_r:
-       s = r.sites[0]
-       print(
-           f"  {r.bns_number:8s}    {r.msg_type}     {r.parent_sg:3d}"
-           f"     {r.n_ops:2d}       {s.n_free}"
-       )
+   site_moms = orbit_moments(r, site_idx=0, m_ref=m_ref, k=K, centering="R")
+
+   for pos, mom in site_moms:
+       print(f"  {np.round(pos, 4)}:  m = {np.round(mom, 3)} μ_B")
 
 .. code-block:: text
 
-   7 candidate MSGs
+     [0.     0.     0.3333]:  m = [0.5 0.  0. ] μ_B
+     [0.     0.     0.6667]:  m = [0.5 0.  0. ] μ_B
+     [0.     0.     0.8333]:  m = [-0.5  0.   0. ] μ_B
+     [0.     0.     0.1667]:  m = [-0.5  0.   0. ] μ_B
 
-   BNS         type  parent  n_ops  n_free
-     2.5         2       2      4       0
-     2.7         4       2      4       3
-     1.2         2       1      2       0
-     1.3         4       1      2       3
-     2.4         1       2      2       3
-     2.6         3       2      2       3
-     1.1         1       1      1       3
+Four-site zigzag +,+,−,− along *c*.  Net moment zero (antiferromagnet).
 
-Only 7 candidates compared to 27 for CrCl\ :sub:`3`.  Because the little
-co-group contains only W ∈ {**E**, **i**}, the subgroup lattice is
-exhausted by the P\ :math:`\bar{1}` (parent 2) and P1 (parent 1) families.
-All MSGs from SG 148 itself are absent — the R-3 rotations (C\ :sub:`3`,
-S\ :sub:`6`) are not k-compatible with **k** = (0, 1/2, 1) and so
-cannot appear as operators in any candidate MSG.
+Structure factors
+-----------------
 
-Contrast with CrCl\ :sub:`3`
-------------------------------
+Satellites appear at **Q** = **τ** + **k** where **τ** satisfies the
+R-centering condition −h + k + l ≡ 0 (mod 3):
 
-.. list-table::
-   :header-rows: 1
-   :widths: 30 35 35
+.. code-block:: python
 
-   * -
-     - CrCl\ :sub:`3`
-     - α-RuCl\ :sub:`3`
-   * - **k**
-     - (0, 0, 3/2)
-     - (0, 1/2, 1)
-   * - Little co-group of **k**
-     - S\ :sub:`6` (full R-3 point group)
-     - C\ :sub:`i` (inversion only)
-   * - k-maximal MSG (BNS)
-     - 148.20 (parent 148, R-3)
-     - **2.7** (parent 2, P\ :math:`\bar{1}`)
-   * - Maximal MSG n_free
-     - 1 (m ‖ c only)
-     - 3 (fully free)
-   * - Maximal origin variants
-     - 2 (type-IV τ)
-     - 2 (type-IV τ)
-   * - Subgroup candidates
-     - 27
-     - 7
-   * - In-plane accessible from maximal?
-     - No — requires symmetry lowering
-     - Yes — already at maximal level
+   a, c_lat = 5.98, 17.0
+   lattice = np.array([[a,    0,              0    ],
+                       [-a/2, a*np.sqrt(3)/2, 0    ],
+                       [0,    0,              c_lat]])
+   B = 2 * np.pi * np.linalg.inv(lattice).T
 
-The key difference is not the parent space group but the propagation vector:
-**k** = (0, 0, 3/2) preserves the three-fold axis in the little co-group
-so the k-maximal MSG stays within the R-3 family; **k** = (0, 1/2, 1)
-expels C\ :sub:`3` from the little co-group entirely, driving the k-maximal
-MSG to the P\ :math:`\bar{1}` family and lifting the c-axis constraint from
-the outset.
+   hkl_list = [(0,0,0), (0,1,-1), (0,0,3), (0,0,6)]
+   F2 = magnetic_structure_factors(
+       site_moms, hkl_list, K, lattice=lattice, ion="Ru1+"
+   )
 
-.. [1] J. M. Perez-Mato et al., *Annu. Rev. Mater. Res.* **45**, 217 (2015).
+   print(f"  {'τ':12s}  {'Q = τ+k':18s}  {'|F_M|²':>8s}  {'sin²α':>6s}  {'|F_M⊥|²':>9s}")
+   for hkl_i, f2 in zip(hkl_list, F2):
+       Q_frac  = tuple(h + ki for h, ki in zip(hkl_i, K))
+       Q_cart  = B @ np.array(Q_frac)
+       Q_mag   = np.linalg.norm(Q_cart)
+       s2      = 1 - np.dot(Q_cart / Q_mag, m_ref / np.linalg.norm(m_ref))**2
+       qstr    = "({:.0f},{:.1f},{:.0f})".format(*Q_frac)
+       print(f"  {str(hkl_i):12s}  {qstr:18s}  {f2:8.3f}  {s2:6.3f}  {f2*s2:9.3f}")
+
+.. code-block:: text
+
+     τ             Q = τ+k              |F_M|²   sin²α    |F_M⊥|²
+     (0, 0, 0)     (0,0.5,1)             0.844   0.846      0.714
+     (0, 1, -1)    (0,1.5,0)             0.000   0.800      0.000
+     (0, 0, 3)     (0,0.5,4)             0.000   0.965      0.000
+     (0, 0, 6)     (0,0.5,7)             0.147   0.987      0.145
+
+Two independent extinctions reduce the observable peak count: (0, 1.5, 0)
+cancels because Q\ :sub:`z` = 0 makes all four orbit phases equal; (0, 0.5, 4)
+cancels from the +,+,−,− phase combination at Q\ :sub:`z` = 4.  The
+satellite at (0, ½, 1) from τ = (0, 0, 0) is the primary experimental
+target.
+
+.. [2] S.-Y. Park et al.,
+   *Emergence of the isotropic Kitaev honeycomb lattice α-RuCl*\ :sub:`3`
+   *and its magnetic properties*,
+   J. Phys.: Condens. Matter **36**, 215803 (2024).
