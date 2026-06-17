@@ -41,6 +41,7 @@
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -339,19 +340,27 @@ FullProf <a class="footnote-reference brackets" href="#id7" id="id3" role="doc-n
 <li><p>Operator tables for all 1651 commensurate MSGs (types I–IV)</p></li>
 <li><p>k-vector compatibility filtering with centering-aware reciprocal lattice</p></li>
 <li><p>Site-symmetry moment basis via SVD null-space analysis</p></li>
-<li><p>Maximal MSG selection (<code class="docutils literal notranslate"><span class="pre">maximal_msgs</span></code>)</p></li>
-<li><p>Full subgroup lattice search (<code class="docutils literal notranslate"><span class="pre">subgroup_msgs</span></code>)</p></li>
-<li><p>Direct lower-symmetry MSG analysis</p></li>
-<li><p>Domain operator enumeration</p></li>
+<li><p><strong>k-maximal MSG selection</strong> (<code class="docutils literal notranslate"><span class="pre">maximal_msgs</span></code>) — implements the Bilbao MAXMAGN
+definition; returns one entry per conjugacy class plus its domain-related
+origin variants (MAXMAGN “alternatives (domain-related)”)</p></li>
+<li><p><strong>Full subgroup lattice search</strong> (<code class="docutils literal notranslate"><span class="pre">subgroup_msgs</span></code>) — controlled descent to
+lower symmetries including cross-parent-SG candidates</p></li>
+<li><p>Direct MSG analysis for a known BNS number (<code class="docutils literal notranslate"><span class="pre">analyze_msg</span></code>)</p></li>
+<li><p>Domain operator enumeration (<code class="docutils literal notranslate"><span class="pre">domain_operators</span></code>)</p></li>
+<li><p>Magnetic orbit moments with full operator transformation (<code class="docutils literal notranslate"><span class="pre">orbit_moments</span></code>)</p></li>
+<li><p>Magnetic structure factor <span class="math notranslate nohighlight">\(|F_M|^2\)</span> with optional form-factor scaling
+(<code class="docutils literal notranslate"><span class="pre">magnetic_structure_factors</span></code>)</p></li>
+<li><p>Magnetic form factors <span class="math notranslate nohighlight">\(\langle j_0 \rangle\)</span> and <span class="math notranslate nohighlight">\(\langle j_2 \rangle\)</span>
+for 3d, 4d, and lanthanide/actinide ions (<code class="docutils literal notranslate"><span class="pre">form_factor</span></code>, <code class="docutils literal notranslate"><span class="pre">j0</span></code>, <code class="docutils literal notranslate"><span class="pre">j2</span></code>)</p></li>
 </ul>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="source/tutorials.html">Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="source/tutorial_mnf2.html">MnF<sub>2</sub> — Maximal magnetic space group</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/tutorial_crcl3.html">CrCl<sub>3</sub> — Subgroup lattice search for non-maximal ordering</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/tutorial_rucl3.html">α-RuCl<sub>3</sub> — Zigzag order and the role of the k-vector</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/tutorial_mno.html">MnO — Type-II antiferromagnet on an FCC lattice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/tutorial_mnf2.html">MnF<sub>2</sub> — Collinear antiferromagnet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/tutorial_crcl3.html">CrCl<sub>3</sub> — Zigzag antiferromagnet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/tutorial_rucl3.html">α-RuCl<sub>3</sub> — Zigzag antiferromagnet, k = (0, ½, 1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/tutorial_mno.html">MnO — Type-II antiferromagnet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="source/modules.html">msgjson</a><ul>

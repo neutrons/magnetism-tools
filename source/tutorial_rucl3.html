@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>α-RuCl3 — Zigzag order and the role of the k-vector &#8212; msgjson  documentation</title>
+    <title>α-RuCl3 — Zigzag antiferromagnet, k = (0, ½, 1) &#8212; msgjson  documentation</title>
   
   
   
@@ -46,8 +46,8 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="MnO — Type-II antiferromagnet on an FCC lattice" href="tutorial_mno.html" />
-    <link rel="prev" title="CrCl3 — Subgroup lattice search for non-maximal ordering" href="tutorial_crcl3.html" />
+    <link rel="next" title="MnO — Type-II antiferromagnet" href="tutorial_mno.html" />
+    <link rel="prev" title="CrCl3 — Zigzag antiferromagnet" href="tutorial_crcl3.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -310,10 +310,10 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="tutorial_mnf2.html">MnF<sub>2</sub> — Maximal magnetic space group</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_crcl3.html">CrCl<sub>3</sub> — Subgroup lattice search for non-maximal ordering</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">α-RuCl<sub>3</sub> — Zigzag order and the role of the k-vector</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_mno.html">MnO — Type-II antiferromagnet on an FCC lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_mnf2.html">MnF<sub>2</sub> — Collinear antiferromagnet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_crcl3.html">CrCl<sub>3</sub> — Zigzag antiferromagnet</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">α-RuCl<sub>3</sub> — Zigzag antiferromagnet, k = (0, ½, 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_mno.html">MnO — Type-II antiferromagnet</a></li>
 </ul>
 </div>
 </nav></div>
@@ -357,7 +357,7 @@
     
     <li class="breadcrumb-item"><a href="tutorials.html" class="nav-link">Tutorials</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">α-RuCl<sub>3</sub> — Zigzag order and the role of the k-vector</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">α-RuCl<sub>3</sub> — Zigzag antiferromagnet, k = (0, ½, 1)</span></li>
   </ul>
 </nav>
 </div>
@@ -374,169 +374,107 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="rucl3-zigzag-order-and-the-role-of-the-k-vector">
-<h1>α-RuCl<sub>3</sub> — Zigzag order and the role of the k-vector<a class="headerlink" href="#rucl3-zigzag-order-and-the-role-of-the-k-vector" title="Link to this heading">#</a></h1>
-<p>α-RuCl<sub>3</sub> adopts the R<span class="math notranslate nohighlight">\(\bar{3}\)</span> structure (No. 148) at low
-temperature and orders in a zigzag pattern with propagation vector
-<strong>k</strong> = (0, 1/2, 1) in the hexagonal setting.  The Ru<sup>3+</sup> ions
-occupy the 6c Wyckoff site.</p>
-<p>This tutorial shows how the choice of <strong>k</strong> affects the symmetry analysis,
-producing a qualitatively different result from CrCl<sub>3</sub> despite both
-materials sharing the same parent space group.</p>
+  <section id="rucl3-zigzag-antiferromagnet-k-0-12-1">
+<h1>α-RuCl<sub>3</sub> — Zigzag antiferromagnet, k = (0, ½, 1)<a class="headerlink" href="#rucl3-zigzag-antiferromagnet-k-0-12-1" title="Link to this heading">#</a></h1>
+<p>α-RuCl<sub>3</sub> orders below <span class="math notranslate nohighlight">\(T_N \approx 7\)</span> K in a zigzag
+antiferromagnetic pattern with Ru<sup>3+</sup> moments in the ab-plane <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.
+Space group <span class="math notranslate nohighlight">\(R\bar{3}\)</span> (No. 148), propagation vector
+<strong>k</strong> = (0, ½, 1) (hexagonal setting).  The k-maximal MSG is already
+BNS 2.7 (<span class="math notranslate nohighlight">\(P_S\bar{1}\)</span>, type IV) — no symmetry breaking beyond the
+maximal is required to allow in-plane moments.</p>
 <section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">#</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">msgjson</span><span class="w"> </span><span class="kn">import</span> <span class="n">maximal_msgs</span><span class="p">,</span> <span class="n">subgroup_msgs</span><span class="p">,</span> <span class="n">analyze_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">msgjson</span><span class="w"> </span><span class="kn">import</span> <span class="n">maximal_msgs</span><span class="p">,</span> <span class="n">orbit_moments</span><span class="p">,</span> <span class="n">magnetic_structure_factors</span>
 
-<span class="n">SG</span>      <span class="o">=</span> <span class="mi">148</span>              <span class="c1"># R-3</span>
-<span class="n">K</span>       <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>   <span class="c1"># zigzag propagation vector (hexagonal setting)</span>
-<span class="n">RU_SITE</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">]</span>     <span class="c1"># Ru^3+ at 6c</span>
+<span class="n">SG</span>      <span class="o">=</span> <span class="mi">148</span>
+<span class="n">K</span>       <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="n">RU_SITE</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">]</span>   <span class="c1"># Ru^3+ Wyckoff 6c</span>
 </pre></div>
 </div>
 </section>
-<section id="the-little-co-group-of-k">
-<h2>The little co-group of <strong>k</strong><a class="headerlink" href="#the-little-co-group-of-k" title="Link to this heading">#</a></h2>
-<p>The first step is to identify which rotation matrices map <strong>k</strong> to ±**k**
-modulo the R-centered reciprocal lattice.  For CrCl<sub>3</sub> with
-<strong>k</strong> = (0, 0, 3/2) the entire S<sub>6</sub> point group (all six rotations
-of R<span class="math notranslate nohighlight">\(\bar{3}\)</span>) was k-compatible.  For α-RuCl<sub>3</sub> the
-situation is different:</p>
-<ul class="simple">
-<li><p>The C<sub>3</sub> rotation maps (0, 1/2, 1) → (1/2, 0, 1), which
-is <strong>not</strong> equivalent to ±**k** modulo the R lattice.</p></li>
-<li><p>Only the identity <strong>E</strong> and inversion <strong>i</strong> satisfy the k-compatibility
-condition.</p></li>
-</ul>
-<p>The little co-group is therefore C<sub>i</sub> = {<strong>E</strong>, <strong>i</strong>}, a strict
-subgroup of S<sub>6</sub>.  This has direct consequences for moment symmetry.</p>
-</section>
-<section id="maximal-msgs">
-<h2>Maximal MSGs<a class="headerlink" href="#maximal-msgs" title="Link to this heading">#</a></h2>
+<section id="magnetic-space-group">
+<h2>Magnetic space group<a class="headerlink" href="#magnetic-space-group" title="Link to this heading">#</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">top</span> <span class="o">=</span> <span class="n">maximal_msgs</span><span class="p">(</span><span class="n">SG</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">K</span><span class="p">,</span> <span class="n">sites</span><span class="o">=</span><span class="p">[</span><span class="n">RU_SITE</span><span class="p">],</span> <span class="n">centering</span><span class="o">=</span><span class="s2">&quot;R&quot;</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">top</span><span class="p">:</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">sites</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;BNS </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">bns_number</span><span class="si">}</span><span class="s2">  type=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">msg_type</span><span class="si">}</span><span class="s2">  parent_sg=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">parent_sg</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;  n_ops=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">n_ops</span><span class="si">}</span><span class="s2">  n_free=</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_free</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;  orbit=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">orbit</span><span class="p">)</span><span class="si">}</span><span class="s2">  origin=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">origin_shift</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BNS </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">bns_number</span><span class="si">}</span><span class="s2">  type=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">msg_type</span><span class="si">}</span><span class="s2">  n_ops=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">n_ops</span><span class="si">}</span><span class="s2">&quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;  n_free=</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_free</span><span class="si">}</span><span class="s2">  origin=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">origin_shift</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>BNS 2.7  type=4  parent_sg=2  n_ops=4  n_free=3  orbit=4  origin=(0.0, 0.0, 0.0)
-BNS 2.7  type=4  parent_sg=2  n_ops=4  n_free=3  orbit=4  origin=(0.0, 0.0, 0.5)
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>BNS 2.7  type=4  n_ops=4  n_free=3  origin=(0.0, 0.0, 0.0)
+BNS 2.7  type=4  n_ops=4  n_free=3  origin=(0.0, 0.0, 0.5)
 </pre></div>
 </div>
-<p>The k-maximal MSG is BNS 2.7 (<span class="math notranslate nohighlight">\(P_S\bar{1}\)</span>, type IV), whose parent
-space group is SG 2 (P<span class="math notranslate nohighlight">\(\bar{1}\)</span>) — <strong>not</strong> the input parent SG 148
-(R<span class="math notranslate nohighlight">\(\bar{3}\)</span>).  This is the defining feature of the Bilbao MAXMAGN
-definition <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>: a MSG is k-maximal if it has <em>no k-compatible supergroup</em>
-anywhere in the subgroup lattice of G1’.  Because the little co-group of
-<strong>k</strong> = (0, 1/2, 1) contains only W ∈ {<strong>E</strong>, <strong>i</strong>}, the entire R-3
-operator set lies outside the little co-group.  No MSG belonging to
-SG 148 can be k-compatible — the k-maximal MSG therefore crosses the
-parent-SG boundary to the P<span class="math notranslate nohighlight">\(\bar{1}\)</span> family.</p>
-<p>The two results again represent inequivalent origin placements (domain
-states) of the type-IV anti-translation τ = (0, 0, 1/2).</p>
-<p>n_free = 3 for both: with no C<sub>3</sub> constraint anywhere in the
-P<span class="math notranslate nohighlight">\(\bar{1}\)</span> symmetry, all moment directions — including in-plane
-— are already allowed at the maximal level.  This contrasts with
-CrCl<sub>3</sub>, where the k-maximal MSG (also BNS 148.20) imposed m ‖ c.</p>
+<p>Two domain states arising from the two inequivalent positions of the
+anti-translation τ = (0, 0, ½).  Both give the same <span class="math notranslate nohighlight">\(|F_M|^2\)</span>.
+<code class="docutils literal notranslate"><span class="pre">n_free</span> <span class="pre">=</span> <span class="pre">3</span></code> — any moment direction is symmetry-allowed.</p>
 </section>
-<section id="subgroup-lattice">
-<h2>Subgroup lattice<a class="headerlink" href="#subgroup-lattice" title="Link to this heading">#</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">all_r</span> <span class="o">=</span> <span class="n">subgroup_msgs</span><span class="p">(</span><span class="n">SG</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">K</span><span class="p">,</span> <span class="n">sites</span><span class="o">=</span><span class="p">[</span><span class="n">RU_SITE</span><span class="p">],</span> <span class="n">centering</span><span class="o">=</span><span class="s2">&quot;R&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_r</span><span class="p">)</span><span class="si">}</span><span class="s2"> candidate MSGs</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<section id="moment-orbit">
+<h2>Moment orbit<a class="headerlink" href="#moment-orbit" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">top</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">m_amp</span> <span class="o">=</span> <span class="mf">0.5</span>                          <span class="c1"># μ_B, Ru³⁺ ordered moment</span>
+<span class="n">m_ref</span> <span class="o">=</span> <span class="n">m_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>   <span class="c1"># in-plane, along a*</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;BNS&#39;</span><span class="si">:</span><span class="s2">10s</span><span class="si">}</span><span class="s2">  type  parent  n_ops  n_free&quot;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">all_r</span><span class="p">:</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">sites</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">bns_number</span><span class="si">:</span><span class="s2">8s</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">msg_type</span><span class="si">}</span><span class="s2">     </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">parent_sg</span><span class="si">:</span><span class="s2">3d</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;     </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">n_ops</span><span class="si">:</span><span class="s2">2d</span><span class="si">}</span><span class="s2">       </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_free</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="p">)</span>
+<span class="n">site_moms</span> <span class="o">=</span> <span class="n">orbit_moments</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">site_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">m_ref</span><span class="o">=</span><span class="n">m_ref</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">K</span><span class="p">,</span> <span class="n">centering</span><span class="o">=</span><span class="s2">&quot;R&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">mom</span> <span class="ow">in</span> <span class="n">site_moms</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">:  m = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mom</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> μ_B&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>7 candidate MSGs
-
-BNS         type  parent  n_ops  n_free
-  2.5         2       2      4       0
-  2.7         4       2      4       3
-  1.2         2       1      2       0
-  1.3         4       1      2       3
-  2.4         1       2      2       3
-  2.6         3       2      2       3
-  1.1         1       1      1       3
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[0.     0.     0.3333]:  m = [0.5 0.  0. ] μ_B
+[0.     0.     0.6667]:  m = [0.5 0.  0. ] μ_B
+[0.     0.     0.8333]:  m = [-0.5  0.   0. ] μ_B
+[0.     0.     0.1667]:  m = [-0.5  0.   0. ] μ_B
 </pre></div>
 </div>
-<p>Only 7 candidates compared to 27 for CrCl<sub>3</sub>.  Because the little
-co-group contains only W ∈ {<strong>E</strong>, <strong>i</strong>}, the subgroup lattice is
-exhausted by the P<span class="math notranslate nohighlight">\(\bar{1}\)</span> (parent 2) and P1 (parent 1) families.
-All MSGs from SG 148 itself are absent — the R-3 rotations (C<sub>3</sub>,
-S<sub>6</sub>) are not k-compatible with <strong>k</strong> = (0, 1/2, 1) and so
-cannot appear as operators in any candidate MSG.</p>
+<p>Four-site zigzag +,+,−,− along <em>c</em>.  Net moment zero (antiferromagnet).</p>
 </section>
-<section id="contrast-with-crcl3">
-<h2>Contrast with CrCl<sub>3</sub><a class="headerlink" href="#contrast-with-crcl3" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 30.0%" />
-<col style="width: 35.0%" />
-<col style="width: 35.0%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"></th>
-<th class="head"><p>CrCl<sub>3</sub></p></th>
-<th class="head"><p>α-RuCl<sub>3</sub></p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><strong>k</strong></p></td>
-<td><p>(0, 0, 3/2)</p></td>
-<td><p>(0, 1/2, 1)</p></td>
-</tr>
-<tr class="row-odd"><td><p>Little co-group of <strong>k</strong></p></td>
-<td><p>S<sub>6</sub> (full R-3 point group)</p></td>
-<td><p>C<sub>i</sub> (inversion only)</p></td>
-</tr>
-<tr class="row-even"><td><p>k-maximal MSG (BNS)</p></td>
-<td><p>148.20 (parent 148, R-3)</p></td>
-<td><p><strong>2.7</strong> (parent 2, P<span class="math notranslate nohighlight">\(\bar{1}\)</span>)</p></td>
-</tr>
-<tr class="row-odd"><td><p>Maximal MSG n_free</p></td>
-<td><p>1 (m ‖ c only)</p></td>
-<td><p>3 (fully free)</p></td>
-</tr>
-<tr class="row-even"><td><p>Maximal origin variants</p></td>
-<td><p>2 (type-IV τ)</p></td>
-<td><p>2 (type-IV τ)</p></td>
-</tr>
-<tr class="row-odd"><td><p>Subgroup candidates</p></td>
-<td><p>27</p></td>
-<td><p>7</p></td>
-</tr>
-<tr class="row-even"><td><p>In-plane accessible from maximal?</p></td>
-<td><p>No — requires symmetry lowering</p></td>
-<td><p>Yes — already at maximal level</p></td>
-</tr>
-</tbody>
-</table>
+<section id="structure-factors">
+<h2>Structure factors<a class="headerlink" href="#structure-factors" title="Link to this heading">#</a></h2>
+<p>Satellites appear at <strong>Q</strong> = <strong>τ</strong> + <strong>k</strong> where <strong>τ</strong> satisfies the
+R-centering condition −h + k + l ≡ 0 (mod 3):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span> <span class="n">c_lat</span> <span class="o">=</span> <span class="mf">5.98</span><span class="p">,</span> <span class="mf">17.0</span>
+<span class="n">lattice</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">a</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>              <span class="mi">0</span>    <span class="p">],</span>
+                    <span class="p">[</span><span class="o">-</span><span class="n">a</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">a</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span>    <span class="p">],</span>
+                    <span class="p">[</span><span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>              <span class="n">c_lat</span><span class="p">]])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">lattice</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+<span class="n">hkl_list</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">)]</span>
+<span class="n">F2</span> <span class="o">=</span> <span class="n">magnetic_structure_factors</span><span class="p">(</span>
+    <span class="n">site_moms</span><span class="p">,</span> <span class="n">hkl_list</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">lattice</span><span class="o">=</span><span class="n">lattice</span><span class="p">,</span> <span class="n">ion</span><span class="o">=</span><span class="s2">&quot;Ru1+&quot;</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="s1">&#39;τ&#39;</span><span class="si">:</span><span class="s2">12s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;Q = τ+k&#39;</span><span class="si">:</span><span class="s2">18s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;|F_M|²&#39;</span><span class="si">:</span><span class="s2">&gt;8s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;sin²α&#39;</span><span class="si">:</span><span class="s2">&gt;6s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;|F_M⊥|²&#39;</span><span class="si">:</span><span class="s2">&gt;9s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">hkl_i</span><span class="p">,</span> <span class="n">f2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">hkl_list</span><span class="p">,</span> <span class="n">F2</span><span class="p">):</span>
+    <span class="n">Q_frac</span>  <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">h</span> <span class="o">+</span> <span class="n">ki</span> <span class="k">for</span> <span class="n">h</span><span class="p">,</span> <span class="n">ki</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">hkl_i</span><span class="p">,</span> <span class="n">K</span><span class="p">))</span>
+    <span class="n">Q_cart</span>  <span class="o">=</span> <span class="n">B</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Q_frac</span><span class="p">)</span>
+    <span class="n">Q_mag</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">Q_cart</span><span class="p">)</span>
+    <span class="n">s2</span>      <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Q_cart</span> <span class="o">/</span> <span class="n">Q_mag</span><span class="p">,</span> <span class="n">m_ref</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">m_ref</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">qstr</span>    <span class="o">=</span> <span class="s2">&quot;(</span><span class="si">{:.0f}</span><span class="s2">,</span><span class="si">{:.1f}</span><span class="s2">,</span><span class="si">{:.0f}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">Q_frac</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">hkl_i</span><span class="p">)</span><span class="si">:</span><span class="s2">12s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">qstr</span><span class="si">:</span><span class="s2">18s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">f2</span><span class="si">:</span><span class="s2">8.3f</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">s2</span><span class="si">:</span><span class="s2">6.3f</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">f2</span><span class="o">*</span><span class="n">s2</span><span class="si">:</span><span class="s2">9.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
 </div>
-<p>The key difference is not the parent space group but the propagation vector:
-<strong>k</strong> = (0, 0, 3/2) preserves the three-fold axis in the little co-group
-so the k-maximal MSG stays within the R-3 family; <strong>k</strong> = (0, 1/2, 1)
-expels C<sub>3</sub> from the little co-group entirely, driving the k-maximal
-MSG to the P<span class="math notranslate nohighlight">\(\bar{1}\)</span> family and lifting the c-axis constraint from
-the outset.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>τ             Q = τ+k              |F_M|²   sin²α    |F_M⊥|²
+(0, 0, 0)     (0,0.5,1)             0.844   0.846      0.714
+(0, 1, -1)    (0,1.5,0)             0.000   0.800      0.000
+(0, 0, 3)     (0,0.5,4)             0.000   0.965      0.000
+(0, 0, 6)     (0,0.5,7)             0.147   0.987      0.145
+</pre></div>
+</div>
+<p>Two independent extinctions reduce the observable peak count: (0, 1.5, 0)
+cancels because Q<sub>z</sub> = 0 makes all four orbit phases equal; (0, 0.5, 4)
+cancels from the +,+,−,− phase combination at Q<sub>z</sub> = 4.  The
+satellite at (0, ½, 1) from τ = (0, 0, 0) is the primary experimental
+target.</p>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="id2" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<ol class="upperalpha simple" start="10">
-<li><ol class="upperalpha simple" start="13">
-<li><p>Perez-Mato et al., <em>Annu. Rev. Mater. Res.</em> <strong>45</strong>, 217 (2015).</p></li>
-</ol>
-</li>
-</ol>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">2</a><span class="fn-bracket">]</span></span>
+<p>S.-Y. Park et al.,
+<em>Emergence of the isotropic Kitaev honeycomb lattice α-RuCl</em><sub>3</sub>
+<em>and its magnetic properties</em>,
+J. Phys.: Condens. Matter <strong>36</strong>, 215803 (2024).</p>
 </aside>
 </aside>
 </section>
@@ -558,7 +496,7 @@ the outset.</p>
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">CrCl<sub>3</sub> — Subgroup lattice search for non-maximal ordering</p>
+        <p class="prev-next-title">CrCl<sub>3</sub> — Zigzag antiferromagnet</p>
       </div>
     </a>
     <a class="right-next"
@@ -566,7 +504,7 @@ the outset.</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">MnO — Type-II antiferromagnet on an FCC lattice</p>
+        <p class="prev-next-title">MnO — Type-II antiferromagnet</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -590,10 +528,9 @@ the outset.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup">Setup</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-little-co-group-of-k">The little co-group of <strong>k</strong></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#maximal-msgs">Maximal MSGs</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subgroup-lattice">Subgroup lattice</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contrast-with-crcl3">Contrast with CrCl<sub>3</sub></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#magnetic-space-group">Magnetic space group</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moment-orbit">Moment orbit</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#structure-factors">Structure factors</a></li>
 </ul>
   </nav></div>
 

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>MnF2 — Maximal magnetic space group &#8212; msgjson  documentation</title>
+    <title>MnF2 — Collinear antiferromagnet &#8212; msgjson  documentation</title>
   
   
   
@@ -46,7 +46,7 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CrCl3 — Subgroup lattice search for non-maximal ordering" href="tutorial_crcl3.html" />
+    <link rel="next" title="CrCl3 — Zigzag antiferromagnet" href="tutorial_crcl3.html" />
     <link rel="prev" title="Tutorials" href="tutorials.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -310,10 +310,10 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">MnF<sub>2</sub> — Maximal magnetic space group</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_crcl3.html">CrCl<sub>3</sub> — Subgroup lattice search for non-maximal ordering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_rucl3.html">α-RuCl<sub>3</sub> — Zigzag order and the role of the k-vector</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_mno.html">MnO — Type-II antiferromagnet on an FCC lattice</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">MnF<sub>2</sub> — Collinear antiferromagnet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_crcl3.html">CrCl<sub>3</sub> — Zigzag antiferromagnet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_rucl3.html">α-RuCl<sub>3</sub> — Zigzag antiferromagnet, k = (0, ½, 1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_mno.html">MnO — Type-II antiferromagnet</a></li>
 </ul>
 </div>
 </nav></div>
@@ -357,7 +357,7 @@
     
     <li class="breadcrumb-item"><a href="tutorials.html" class="nav-link">Tutorials</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">MnF<sub>2</sub> — Maximal magnetic space group</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">MnF<sub>2</sub> — Collinear antiferromagnet</span></li>
   </ul>
 </nav>
 </div>
@@ -374,79 +374,101 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="mnf2-maximal-magnetic-space-group">
-<h1>MnF<sub>2</sub> — Maximal magnetic space group<a class="headerlink" href="#mnf2-maximal-magnetic-space-group" title="Link to this heading">#</a></h1>
-<p>MnF<sub>2</sub> (manganese fluoride) is a classic antiferromagnet with space
-group <span class="math notranslate nohighlight">\(P4_2/mnm\)</span> (No. 136), ordering wavevector <strong>k</strong> = (0, 0, 0), and
-Mn<sup>2+</sup> at the Wyckoff 2a site (0, 0, 0).  This tutorial shows how to
-use <a class="reference internal" href="msgjson.html#msgjson.query.maximal_msgs" title="msgjson.query.maximal_msgs"><code class="xref py py-func docutils literal notranslate"><span class="pre">maximal_msgs()</span></code></a> to identify the maximal MSGs
-consistent with those symmetry constraints.</p>
+  <section id="mnf2-collinear-antiferromagnet">
+<h1>MnF<sub>2</sub> — Collinear antiferromagnet<a class="headerlink" href="#mnf2-collinear-antiferromagnet" title="Link to this heading">#</a></h1>
+<p>MnF<sub>2</sub> orders below <span class="math notranslate nohighlight">\(T_N = 67\)</span> K as a two-sublattice
+antiferromagnet with Mn<sup>2+</sup> moments along the tetragonal <em>c</em>-axis <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.
+Space group <span class="math notranslate nohighlight">\(P4_2/mnm\)</span> (No. 136), propagation vector <strong>k</strong> = (0, 0, 0):
+magnetic satellite peaks coincide with nuclear Bragg positions.</p>
 <section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">#</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">msgjson</span><span class="w"> </span><span class="kn">import</span> <span class="n">maximal_msgs</span><span class="p">,</span> <span class="n">compatible_msgs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">msgjson</span><span class="w"> </span><span class="kn">import</span> <span class="n">maximal_msgs</span><span class="p">,</span> <span class="n">orbit_moments</span><span class="p">,</span> <span class="n">magnetic_structure_factors</span>
 
-<span class="n">SG</span>   <span class="o">=</span> <span class="mi">136</span>          <span class="c1"># P4_2/mnm</span>
-<span class="n">K</span>    <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>    <span class="c1"># zone-centre ordering</span>
-<span class="n">SITE</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>    <span class="c1"># Mn^2+ Wyckoff 2a</span>
+<span class="n">SG</span>   <span class="o">=</span> <span class="mi">136</span>
+<span class="n">K</span>    <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">SITE</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># Mn^2+ Wyckoff 2a</span>
 </pre></div>
 </div>
 </section>
-<section id="finding-all-compatible-msgs">
-<h2>Finding all compatible MSGs<a class="headerlink" href="#finding-all-compatible-msgs" title="Link to this heading">#</a></h2>
-<p><a class="reference internal" href="msgjson.html#msgjson.query.compatible_msgs" title="msgjson.query.compatible_msgs"><code class="xref py py-func docutils literal notranslate"><span class="pre">compatible_msgs()</span></code></a> returns every MSG whose parent space
-group is SG 136 and whose operators are compatible with <strong>k</strong> = 0.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">compatible_msgs</span><span class="p">(</span><span class="n">SG</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">K</span><span class="p">,</span> <span class="n">sites</span><span class="o">=</span><span class="p">[</span><span class="n">SITE</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> compatible MSGs for SG </span><span class="si">{</span><span class="n">SG</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>12 compatible MSGs for SG 136
-</pre></div>
-</div>
-</section>
-<section id="selecting-maximal-msgs">
-<h2>Selecting maximal MSGs<a class="headerlink" href="#selecting-maximal-msgs" title="Link to this heading">#</a></h2>
-<p><a class="reference internal" href="msgjson.html#msgjson.query.maximal_msgs" title="msgjson.query.maximal_msgs"><code class="xref py py-func docutils literal notranslate"><span class="pre">maximal_msgs()</span></code></a> filters the list to those MSGs that
-(i) allow a non-zero moment at the input site and (ii) have the highest
-operator count — the maximal-symmetry magnetic orderings.</p>
+<section id="magnetic-space-group">
+<h2>Magnetic space group<a class="headerlink" href="#magnetic-space-group" title="Link to this heading">#</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">top</span> <span class="o">=</span> <span class="n">maximal_msgs</span><span class="p">(</span><span class="n">SG</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">K</span><span class="p">,</span> <span class="n">sites</span><span class="o">=</span><span class="p">[</span><span class="n">SITE</span><span class="p">])</span>
 
 <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">top</span><span class="p">:</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">sites</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">v</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">moment_basis</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="n">v</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;BNS </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">bns_number</span><span class="si">}</span><span class="s2">  type=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">msg_type</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;  n_ops=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">n_ops</span><span class="si">}</span><span class="s2">  n_free=</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_free</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;  m || [</span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">]&quot;</span>
-    <span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">moment_basis</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">moment_basis</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BNS </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">bns_number</span><span class="si">}</span><span class="s2">  type=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">msg_type</span><span class="si">}</span><span class="s2">  n_ops=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">n_ops</span><span class="si">}</span><span class="s2">&quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;  n_free=</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_free</span><span class="si">}</span><span class="s2">  m || [</span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>BNS 136.499  type=3  n_ops=16  n_free=1  m || [0.000, 0.000, 1.000]
-BNS 136.501  type=3  n_ops=16  n_free=1  m || [0.000, 0.000, 1.000]
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>BNS 136.499  type=3  n_ops=16  n_free=1  m || [0,0,1]
+BNS 136.501  type=3  n_ops=16  n_free=1  m || [0,0,1]
 </pre></div>
 </div>
-<p>Two type-III MSGs share the maximum operator count (16).  Both constrain
-the Mn moment to lie along [0, 0, 1], consistent with the experimentally
-observed easy-axis antiferromagnetism in MnF<sub>2</sub>.</p>
+<p>Both type-III MSGs force <strong>m</strong> ‖ <strong>c</strong> and represent the same observable
+structure at <strong>k</strong> = 0.  No structural domains arise from this ordering.</p>
 </section>
-<section id="interpreting-the-results">
-<h2>Interpreting the results<a class="headerlink" href="#interpreting-the-results" title="Link to this heading">#</a></h2>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">n_free</span> <span class="pre">=</span> <span class="pre">1</span></code></dt><dd><p>One free parameter — the magnitude of the moment along the allowed
-direction.  There are no in-plane components.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">=</span> <span class="pre">3</span></code></dt><dd><p>Type-III (black-white) MSGs: all rotation matrices of the parent SG are
-present, but some operations are antiunitary (paired with time reversal).
-This is the signature of a commensurate antiferromagnet with <strong>k</strong> = 0.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">orbit</span> <span class="pre">size</span> <span class="pre">=</span> <span class="pre">2</span></code></dt><dd><p>The symmetry orbit of the 2a site contains 2 positions,
-(0, 0, 0) and (1/2, 1/2, 1/2), corresponding to the two Mn sublattices.</p>
-</dd>
-</dl>
-<p>The two MSGs differ in which operations become antiunitary; both are valid
-candidate descriptions and would be distinguished by the relative phase of
-the moments on the two sublattice sites.</p>
+<section id="moment-orbit">
+<h2>Moment orbit<a class="headerlink" href="#moment-orbit" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">top</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>   <span class="c1"># BNS 136.499</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">sites</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">m_amp</span> <span class="o">=</span> <span class="mf">4.9</span>                           <span class="c1"># μ_B, measured Mn²⁺ ordered moment</span>
+<span class="n">m_ref</span> <span class="o">=</span> <span class="n">m_amp</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">moment_basis</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># [0., 0., 4.9]</span>
+
+<span class="n">site_moms</span> <span class="o">=</span> <span class="n">orbit_moments</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">site_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">m_ref</span><span class="o">=</span><span class="n">m_ref</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">K</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">mom</span> <span class="ow">in</span> <span class="n">site_moms</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">:  m = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mom</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> μ_B&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[0.  0.  0.]:  m = [0.  0.  4.9] μ_B
+[0.5 0.5 0.5]:  m = [0.  0. -4.9] μ_B
+</pre></div>
+</div>
+<p>Two-sublattice antiferromagnet; net moment zero.</p>
+</section>
+<section id="structure-factors">
+<h2>Structure factors<a class="headerlink" href="#structure-factors" title="Link to this heading">#</a></h2>
+<p>For <strong>k</strong> = 0 the satellite positions coincide with integer <em>hkl</em>.
+Passing the tetragonal lattice parameters activates the Mn<sup>2+</sup>
+form factor:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lattice</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mf">4.873</span><span class="p">,</span> <span class="mf">4.873</span><span class="p">,</span> <span class="mf">3.306</span><span class="p">])</span>   <span class="c1"># Å, tetragonal</span>
+
+<span class="n">hkl</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span>
+<span class="n">F2</span> <span class="o">=</span> <span class="n">magnetic_structure_factors</span><span class="p">(</span>
+    <span class="n">site_moms</span><span class="p">,</span> <span class="n">hkl</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">lattice</span><span class="o">=</span><span class="n">lattice</span><span class="p">,</span> <span class="n">ion</span><span class="o">=</span><span class="s2">&quot;Mn2+&quot;</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="s1">&#39;hkl&#39;</span><span class="si">:</span><span class="s2">12s</span><span class="si">}</span><span class="s2">  |F_M|² (μ_B²)&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">f2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">hkl</span><span class="p">,</span> <span class="n">F2</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="si">:</span><span class="s2">12s</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">f2</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>hkl           |F_M|² (μ_B²)
+(1, 0, 0)          76.26
+(0, 0, 1)          58.81
+(1, 0, 1)           0.00
+(1, 1, 0)           0.00
+(1, 1, 1)          38.54
+(2, 0, 1)          25.86
+(2, 1, 0)          32.59
+</pre></div>
+</div>
+<p>Selection rule: <span class="math notranslate nohighlight">\(F_M \propto 1 - e^{i\pi(h+k+l)}\)</span> — zero when
+<em>h</em> + <em>k</em> + <em>l</em> is even, active when odd.  Although (0, 0, 1) has a
+nonzero <span class="math notranslate nohighlight">\(|F_M|^2\)</span>, the moment is parallel to <strong>Q</strong> (sin²α = 0)
+so the peak carries no neutron cross-section.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Z. Yamani, Z. Tun, and D. H. Ryan,
+<em>Neutron scattering study of the classical antiferromagnet MnF</em><sub>2</sub><em>:
+a perfect hands-on neutron scattering teaching course</em>,
+Can. J. Phys. <strong>88</strong>, 771 (2010).</p>
+</aside>
+</aside>
 </section>
 </section>
 
@@ -474,7 +496,7 @@ the moments on the two sublattice sites.</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">CrCl<sub>3</sub> — Subgroup lattice search for non-maximal ordering</p>
+        <p class="prev-next-title">CrCl<sub>3</sub> — Zigzag antiferromagnet</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -498,9 +520,9 @@ the moments on the two sublattice sites.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup">Setup</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#finding-all-compatible-msgs">Finding all compatible MSGs</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-maximal-msgs">Selecting maximal MSGs</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpreting-the-results">Interpreting the results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#magnetic-space-group">Magnetic space group</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moment-orbit">Moment orbit</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#structure-factors">Structure factors</a></li>
 </ul>
   </nav></div>
 
