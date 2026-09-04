@@ -17,7 +17,7 @@ Setup
 .. code-block:: python
 
    import numpy as np
-   from msgjson import magnetic_structure_factors
+   from msgjson import magnetic_structure_factors, b_matrix
 
    K = [0.5, 0.5, 0.5]   # L point, FCC Brillouin zone
 
@@ -25,14 +25,14 @@ FCC conventional cell — four Mn sites
 --------------------------------------
 
 With **k** = (½, ½, ½) the phase :math:`e^{2\pi i\mathbf{k}\cdot\mathbf{r}}`
-is +1 at (0, 0, 0) and −1 at the three face-centred positions.  Physical
-refinements find moments in the {111} plane; here we take
-**m** ‖ [1, −1, 0]:
+is +1 at (0, 0, 0) and −1 at the three face-centred positions.  Total neutron
+scattering refinement [3]_ establishes moments along ⟨11̄2̄⟩; here we take
+**m** ‖ [1, 1, −2]:
 
 .. code-block:: python
 
    m_amp = 4.58                                    # μ_B, measured Mn²⁺ moment
-   m_dir = np.array([1.0, -1.0, 0.0]) / np.sqrt(2)
+   m_dir = np.array([1.0, 1.0, -2.0]) / np.sqrt(6)
    m = m_amp * m_dir
 
    site_moms = [
@@ -54,7 +54,7 @@ even or all odd):
 
    a = 4.445
    lattice = a * np.eye(3)
-   B = 2 * np.pi * np.linalg.inv(lattice).T
+   B = b_matrix(lattice)
 
    hkl_list = [(0,0,0), (1,1,1), (1,1,-1), (-1,1,1), (2,0,0), (0,0,2)]
    F2 = magnetic_structure_factors(
@@ -75,17 +75,18 @@ even or all odd):
      τ             Q = τ+k                 |F_M|²   sin²α    |F_M⊥|²
      (0, 0, 0)     (0.5,0.5,0.5)          272.508   1.000    272.508
      (1, 1, 1)     (1.5,1.5,1.5)           62.626   1.000     62.626
-     (1, 1, -1)    (1.5,1.5,-0.5)          98.939   1.000     98.939
-     (-1, 1, 1)    (-0.5,1.5,1.5)          98.939   0.579     57.280
-     (2, 0, 0)     (2.5,0.5,0.5)           62.626   0.704     44.070
-     (0, 0, 2)     (0.5,0.5,2.5)           62.626   1.000     62.626
+     (1, 1, -1)    (1.5,1.5,-0.5)          98.939   0.439     43.394
+     (-1, 1, 1)    (-0.5,1.5,1.5)          98.939   0.860     85.053
+     (2, 0, 0)     (2.5,0.5,0.5)           62.626   0.901     56.441
+     (0, 0, 2)     (0.5,0.5,2.5)           62.626   0.605     37.885
 
 All FCC-allowed **τ** give constructive interference (phases 1, −1, −1, −1
 sum to 4 for the 1:3 sublattice split), so the only intensity variation
-comes from the Mn\ :sup:`2+` form factor and sin²α.  The variation in sin²α
-across equivalent |Q| peaks (e.g. (1, 1, −1) vs (−1, 1, 1)) reflects the
-in-plane anisotropy of the moment direction and can be used to determine
-the moment orientation.
+comes from the Mn\ :sup:`2+` form factor and sin²α.  The strong variation in
+sin²α across symmetry-equivalent :math:`|\mathbf{Q}|` peaks
+(e.g. (1, 1, −1) vs (−1, 1, 1): 0.439 vs 0.860) directly encodes the moment
+orientation within the {111} plane and is what the Goodwin total-scattering
+refinement used to establish the ⟨11̄2̄⟩ direction.
 
 .. [3] A. L. Goodwin et al.,
    *Magnetic structure of MnO at 10 K from total neutron scattering data*,

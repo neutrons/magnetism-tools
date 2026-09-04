@@ -947,10 +947,7 @@ def magnetic_structure_factors(
     # Reciprocal lattice metric: used to convert hkl → Å⁻¹
     if lattice is not None:
         lat = np.asarray(lattice, dtype=float)
-        # B-matrix maps fractional reciprocal coords to Cartesian (Å⁻¹)
-        # Using the relation: reciprocal vectors b* = 2π (a × a / V) etc.
-        # For |Q|: |Q|² = Q_frac · G* · Q_frac where G* = B^T B with B = 2π (lat^-1)^T
-        B = 2 * np.pi * np.linalg.inv(lat).T  # columns = a*, b*, c* in Å⁻¹
+        B = b_matrix(lat)  # columns = a*, b*, c* in Å⁻¹
 
     f2 = np.zeros(len(hkl))
     for i, hkl_i in enumerate(hkl):
@@ -969,6 +966,95 @@ def magnetic_structure_factors(
         f2[i] = float(np.real(np.dot(F.conj(), F)))
 
     return f2
+
+
+# ---------------------------------------------------------------------------
+# Reciprocal-space utilities
+# ---------------------------------------------------------------------------
+
+
+def b_matrix(lattice: np.ndarray) -> np.ndarray:
+    """Return the B-matrix from the real-space lattice via the metric tensor.
+
+    Constructs the metric tensor :math:`G = A A^T` (where the rows of *A* =
+    *lattice* are the direct lattice vectors), inverts to obtain the reciprocal
+    metric :math:`G^* = G^{-1}`, then uses the Cholesky decomposition
+    :math:`G^* = L L^T` to produce an upper-triangular B-matrix:
+
+    .. math::
+
+        B = 2\\pi\\, L^T, \\qquad \\mathbf{Q}_{\\text{cart}} = B\\, \\mathbf{h}
+
+    This is the Busing–Levy convention: **a**\\ :sup:`*` maps to the x-axis,
+    **b**\\ :sup:`*` lies in the xy-plane.  For Cartesian moment components
+    consistent with this frame, [1, 0, 0] denotes a moment **along a**\\ :sup:`*`.
+
+    For orthogonal lattices the result is identical to
+    ``2 * np.pi * np.linalg.inv(lattice)``.
+
+    Parameters
+    ----------
+    lattice : ndarray, shape (3, 3)
+        Real-space lattice matrix with rows **a**, **b**, **c** in Å.
+
+    Returns
+    -------
+    ndarray, shape (3, 3)
+        B-matrix (upper triangular) in Å⁻¹.  Satisfies
+        :math:`B^T B = (2\\pi)^2 G^*`.
+    """
+    lat = np.asarray(lattice, dtype=float)
+    G = lat @ lat.T
+    G_star = np.linalg.inv(G)
+    L = np.linalg.cholesky(G_star)  # lower triangular: G* = L L^T
+    return 2 * np.pi * L.T  # upper triangular B
+
+
+def b_matrix_from_params(
+    a: float,
+    b: float,
+    c: float,
+    alpha: float = 90.0,
+    beta: float = 90.0,
+    gamma: float = 90.0,
+) -> np.ndarray:
+    """Return the B-matrix from conventional lattice parameters.
+
+    Angles are in degrees.  The real-space lattice is constructed in the
+    standard orientation (**a** ‖ x, **b** in xy-plane), then
+    :func:`b_matrix` is called.
+
+    Parameters
+    ----------
+    a, b, c : float
+        Lattice constants in Å.
+    alpha, beta, gamma : float
+        Unit-cell angles in degrees (default 90°).
+
+    Returns
+    -------
+    ndarray, shape (3, 3)
+        B-matrix (upper triangular) in Å⁻¹.
+    """
+    al = np.radians(alpha)
+    be = np.radians(beta)
+    ga = np.radians(gamma)
+
+    # Standard orientation: a || x, b in xy-plane
+    bx = b * np.cos(ga)
+    by = b * np.sin(ga)
+    cx = c * np.cos(be)
+    cy = c * (np.cos(al) - np.cos(be) * np.cos(ga)) / np.sin(ga)
+    cz = np.sqrt(max(c**2 - cx**2 - cy**2, 0.0))
+
+    lattice = np.array(
+        [
+            [a, 0.0, 0.0],
+            [bx, by, 0.0],
+            [cx, cy, cz],
+        ]
+    )
+    return b_matrix(lattice)
 
 
 # type alias for cleaner annotations above

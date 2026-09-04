@@ -12,7 +12,7 @@ Setup
 .. code-block:: python
 
    import numpy as np
-   from msgjson import maximal_msgs, orbit_moments, magnetic_structure_factors
+   from msgjson import maximal_msgs, orbit_moments, magnetic_structure_factors, b_matrix
 
    SG   = 136
    K    = [0, 0, 0]
@@ -72,6 +72,7 @@ form factor:
 .. code-block:: python
 
    lattice = np.diag([4.873, 4.873, 3.306])   # Å, tetragonal
+   B = b_matrix(lattice)
 
    hkl = [(1,0,0), (0,0,1), (1,0,1), (1,1,0), (1,1,1), (2,0,1), (2,1,0)]
    F2 = magnetic_structure_factors(

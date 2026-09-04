@@ -8,6 +8,8 @@ from .query import (
     domain_operators,
     orbit_moments,
     magnetic_structure_factors,
+    b_matrix,
+    b_matrix_from_params,
     MSGResult,
     SiteResult,
 )
@@ -23,6 +25,8 @@ __all__ = [
     "domain_operators",
     "orbit_moments",
     "magnetic_structure_factors",
+    "b_matrix",
+    "b_matrix_from_params",
     "form_factor",
     "j0",
     "j2",

@@ -14,7 +14,7 @@ Setup
 .. code-block:: python
 
    import numpy as np
-   from msgjson import maximal_msgs, orbit_moments, magnetic_structure_factors
+   from msgjson import maximal_msgs, orbit_moments, magnetic_structure_factors, b_matrix
 
    SG      = 148
    K       = [0, 0.5, 1.0]
@@ -76,7 +76,7 @@ R-centering condition −h + k + l ≡ 0 (mod 3):
    lattice = np.array([[a,    0,              0    ],
                        [-a/2, a*np.sqrt(3)/2, 0    ],
                        [0,    0,              c_lat]])
-   B = 2 * np.pi * np.linalg.inv(lattice).T
+   B = b_matrix(lattice)
 
    hkl_list = [(0,0,0), (0,1,-1), (0,0,3), (0,0,6)]
    F2 = magnetic_structure_factors(
@@ -95,10 +95,10 @@ R-centering condition −h + k + l ≡ 0 (mod 3):
 .. code-block:: text
 
      τ             Q = τ+k              |F_M|²   sin²α    |F_M⊥|²
-     (0, 0, 0)     (0,0.5,1)             0.844   0.846      0.714
-     (0, 1, -1)    (0,1.5,0)             0.000   0.800      0.000
-     (0, 0, 3)     (0,0.5,4)             0.000   0.965      0.000
-     (0, 0, 6)     (0,0.5,7)             0.147   0.987      0.145
+     (0, 0, 0)     (0,0.5,1)             0.867   0.818      0.709
+     (0, 1, -1)    (0,1.5,0)             0.000   0.750      0.000
+     (0, 0, 3)     (0,0.5,4)             0.000   0.964      0.000
+     (0, 0, 6)     (0,0.5,7)             0.150   0.987      0.148
 
 Two independent extinctions reduce the observable peak count: (0, 1.5, 0)
 cancels because Q\ :sub:`z` = 0 makes all four orbit phases equal; (0, 0.5, 4)
