@@ -16,7 +16,7 @@ Setup
 .. code-block:: python
 
    import numpy as np
-   from msgjson import analyze_msg, orbit_moments, magnetic_structure_factors
+   from msgjson import analyze_msg, orbit_moments, magnetic_structure_factors, b_matrix
 
    K        = [0, 0, 3/2]
    CR_SITES = [[0, 0, 1/3], [0, 0, 2/3]]   # Cr^3+ Wyckoff 6c
@@ -77,7 +77,7 @@ R-centering condition −h + k + l ≡ 0 (mod 3):
    lattice = np.array([[a,    0,              0    ],
                        [-a/2, a*np.sqrt(3)/2, 0    ],
                        [0,    0,              c_lat]])
-   B = 2 * np.pi * np.linalg.inv(lattice).T
+   B = b_matrix(lattice)
 
    hkl_list = [(0,0,0), (0,0,3), (2,-1,0), (-1,2,0)]
    F2 = magnetic_structure_factors(
@@ -98,8 +98,8 @@ R-centering condition −h + k + l ≡ 0 (mod 3):
      τ             Q = τ+k        |F_M|²  sin²α    |F_M⊥|²
      (0, 0, 0)     (0,0,1.5)       34.61   1.000      34.61
      (0, 0, 3)     (0,0,4.5)       25.36   1.000      25.36
-     (2, -1, 0)    (2,-1,1.5)      21.36   0.442       9.43
-     (-1, 2, 0)    (-1,2,1.5)      16.20   0.996      16.13
+     (2, -1, 0)    (2,-1,1.5)      19.53   0.297       5.80
+     (-1, 2, 0)    (-1,2,1.5)      19.53   1.000      19.53
 
 The (0, 0, 3/2) and (0, 0, 9/2) satellites lie along **c** so
 sin²α = 1 for in-plane moments — these are the most sensitive probes
